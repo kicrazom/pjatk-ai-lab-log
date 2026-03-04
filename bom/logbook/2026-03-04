@@ -1,0 +1,19 @@
+## UPS acceptance test (ARMAC Office On-Line PF1 2000VA)
+
+### Goal
+Validate that the AI workstation operates correctly on the UPS and that the UPS provides voltage regulation in INV mode.
+
+### Procedure
+1. Connected UPS directly to a grounded wall outlet.
+2. Connected workstation PSU (IEC C20) to UPS output using IEC C13→C20 16A cable.
+3. Switched UPS to INV (double conversion) mode.
+4. Observed input/output voltage and mode LEDs on UPS display.
+
+### Results
+- Workstation runs normally when powered via UPS.
+- UPS INV mode provides regulated output (~230V) while input is ~239–240V.
+- In BYPASS mode, output tracks input (~239–240V).
+- Noted faint high-frequency inverter noise in INV mode; absent in BYPASS (expected behavior for online UPS).
+
+### Status
+PASS ✅
