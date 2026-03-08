@@ -1,7 +1,7 @@
 
 #!/usr/bin/env bash
 
-# ROCm + PyTorch benchmark script for Radeon AI PRO R9700
+# ROCm + PyTorch benchmark script for sigle GPU Radeon AI PRO R9700
 # Reproduces the GEMM benchmark used in this repository.
 
 set -e
