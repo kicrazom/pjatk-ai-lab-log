@@ -1,7 +1,8 @@
 # pjatk-ai-lab-log
-Private engineering log of AI workstation build, power infrastructure and ROCm environment.
+Private engineering log of Local AI / LLM Experiments AI workstation build, power infrastructure and ROCm environment.
 
-AI Workstation for Local AI / LLM Experiments
+Security note:
+This repository documents a workstation build and experiments. Operational details such as hostnames, domains, network addresses and secrets are intentionally omitted.
 
 Hardware:
 - Ryzen 9 9950X3D
@@ -17,5 +18,5 @@ Focus:
 - workstation infrastructure
 
 ```
-Project in developement
+Project in development
 ```
