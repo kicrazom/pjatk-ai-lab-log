@@ -1,24 +1,14 @@
 # AI Workstation Dashboard
+Real-time system monitoring dashboard for AMD AI workstations.  
+Built for Ryzen 9 9950X3D + 2× Radeon AI PRO R9700 + Kubuntu 24.04.
 
 ##Dashboard Preview
-![AI Workstation Dashboard](assets/Screenshot_AI_Workstation_Dashboard.png)
+<p align="center">
+  <img src="assets/Screenshot_AI_Workstation_Dashboard.png" alt="AI Workstation Dashboard" width="1200"/>
+</p>
 
 Real-time system monitoring dashboard for AMD AI workstations.
 Built for: Ryzen 9 9950X3D + 2× Radeon AI PRO R9700 + Kubuntu 24.04
-
-## Quick Start
-
-```bash
-tar xzf ai-dashboard.tar.gz
-cd ai-dashboard
-chmod +x setup.sh start.sh
-
-# One-time setup (creates .venv, installs deps):
-./setup.sh
-
-# Launch:
-./start.sh
-```
 
 Open **http://localhost:8000** in your browser.
 
