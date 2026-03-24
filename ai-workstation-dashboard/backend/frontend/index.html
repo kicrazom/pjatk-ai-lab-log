@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Workstation Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep: #020617;
+    --bg-card: #0f172a;
+    --bg-card2: #1e293b;
+    --border: #1e293b;
+    --text: #e2e8f0;
+    --text-dim: #94a3b8;
+    --text-muted: #64748b;
+    --text-dark: #475569;
+    --cyan: #22d3ee;
+    --purple: #a78bfa;
+    --green: #34d399;
+    --amber: #fbbf24;
+    --red: #f87171;
+    --pink: #f472b6;
+    --orange: #f59e0b;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Instrument Sans', 'Segoe UI', system-ui, sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: linear-gradient(160deg, var(--bg-deep) 0%, var(--bg-card) 40%, var(--bg-deep) 100%);
+    color: var(--text); font-family: var(--sans); padding: 16px 20px; min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 16px;
+  }
+  .header h1 {
+    font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+    background: linear-gradient(90deg, var(--cyan), var(--purple));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .header .sub { font-size: 11.5px; color: var(--text-muted); font-family: var(--mono); margin-top: 3px; }
+  .header .clock { font-size: 20px; font-weight: 700; font-family: var(--mono); text-align: right; }
+  .header .clock-sub { font-size: 10.5px; color: var(--text-muted); }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .grid2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .card {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card2) 100%);
+    border-radius: 12px; padding: 14px 16px; position: relative; overflow: hidden;
+    min-width: 0;
+  }
+  .card .accent-line { position: absolute; top: 0; left: 0; right: 0; height: 2px; opacity: 0.6; }
+  .card-title {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .card-title .icon { font-size: 16px; }
+  .big-num { font-size: 28px; font-weight: 800; font-family: var(--mono); }
+  .big-num-sm { font-size: 22px; font-weight: 800; font-family: var(--mono); }
+  .big-num-temp { font-size: 28px; font-weight: 800; font-family: var(--mono); }
+  .label { font-size: 14px; color: var(--text-muted); }
+  .detail { font-size: 11px; color: var(--text-muted); }
+  .detail span { color: var(--text); font-family: var(--mono); }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px; }
+  .stat-box { text-align: center; padding: 6px 0; background: var(--bg-deep); border-radius: 8px; }
+  .stat-box .val { font-size: 22px; font-weight: 800; font-family: var(--mono); }
+  .stat-box .lbl { font-size: 9px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .gauge { height: 6px; background: var(--bg-card); border-radius: 3px; overflow: hidden; margin-top: 3px; }
+  .gauge-fill { height: 100%; border-radius: 3px; transition: width 0.6s cubic-bezier(.4,0,.2,1); }
+  .gauge-row { margin-bottom: 6px; }
+  .gauge-labels { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px; }
+  .gauge-labels .k { color: var(--text-dim); }
+  .gauge-labels .v { color: var(--text); font-family: var(--mono); font-weight: 600; }
+  .sparkline-wrap { margin-top: 6px; }
+  svg.spark { display: block; width: 100%; }
+  .ptable { width: 100%; border-collapse: collapse; font-size: 11.5px; font-family: var(--mono); }
+  .ptable thead th {
+    text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--border);
+    color: var(--text-muted); text-transform: uppercase; font-size: 9px; letter-spacing: 0.06em;
+  }
+  .ptable thead th.r { text-align: right; }
+  .ptable tbody td { padding: 3px 8px; border-bottom: 1px solid var(--bg-deep); }
+  .ptable tbody td.r { text-align: right; }
+  .ptable tbody td.pid { color: var(--cyan); }
+  .ptable tbody td.pname { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .footer { text-align: center; font-size: 10px; color: var(--text-dark); letter-spacing: 0.04em; margin-top: 12px; }
+  .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+  .status-dot.ok { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .status-dot.err { background: var(--red); box-shadow: 0 0 6px var(--red); }
+  @media (max-width: 900px) {
+    .grid3 { grid-template-columns: 1fr; }
+    .grid2-1 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>◆ AI Workstation Dashboard</h1>
+    <div class="sub" id="sysinfo">connecting...</div>
+  </div>
+  <div style="text-align:right;flex-shrink:0">
+    <div class="clock" id="clock">--:--:--</div>
+    <div class="clock-sub"><span class="status-dot" id="ws-dot"></span><span id="ws-status">connecting</span> · <span id="uptime">--</span> · load <span id="loadavg">--</span></div>
+  </div>
+</div>
+
+<!-- Row 1: CPU / RAM / Disk -->
+<div class="grid3">
+  <div class="card">
+    <div class="accent-line" style="background:linear-gradient(90deg,transparent,var(--cyan),transparent)"></div>
+    <div class="card-title" style="color:var(--cyan)"><span class="icon">⚡</span> CPU</div>
+    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
+      <span class="big-num" style="color:var(--cyan)" id="cpu-pct">--</span>
+      <span class="detail" id="cpu-name" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">--</span>
+    </div>
+    <div class="detail-grid">
+      <div class="detail"><span style="color:var(--text-muted)">Cores </span><span id="cpu-cores">--</span></div>
+      <div class="detail"><span style="color:var(--text-muted)">Freq </span><span id="cpu-freq">--</span></div>
+      <div class="detail"><span style="color:var(--text-muted)">Temp </span><span id="cpu-temp-sm">--</span></div>
+      <div class="detail"><span style="color:var(--text-muted)">Load </span><span id="cpu-load1">--</span></div>
+    </div>
+    <div class="sparkline-wrap"><svg class="spark" id="spark-cpu" viewBox="0 0 100 100" preserveAspectRatio="none" height="36"></svg></div>
+  </div>
+
+  <div class="card">
+    <div class="accent-line" style="background:linear-gradient(90deg,transparent,var(--purple),transparent)"></div>
+    <div class="card-title" style="color:var(--purple)"><span class="icon">🧠</span> MEMORY</div>
+    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
+      <span class="big-num" style="color:var(--purple)" id="ram-used">--</span>
+      <span class="label" id="ram-total">/ -- GiB</span>
+    </div>
+    <div class="gauge-row">
+      <div class="gauge-labels"><span class="k">RAM</span><span class="v" id="ram-pct">--%</span></div>
+      <div class="gauge"><div class="gauge-fill" id="ram-bar" style="background:var(--purple);width:0%"></div></div>
+    </div>
+    <div class="gauge-row">
+      <div class="gauge-labels"><span class="k">Swap</span><span class="v" id="swap-info">--</span></div>
+      <div class="gauge"><div class="gauge-fill" id="swap-bar" style="background:var(--text-muted);width:0%"></div></div>
+    </div>
+    <div id="ram-modules" style="margin-top:6px;font-size:10px;color:var(--text-muted);line-height:1.6"></div>
+    <div class="sparkline-wrap"><svg class="spark" id="spark-ram" viewBox="0 0 100 100" preserveAspectRatio="none" height="28"></svg></div>
+  </div>
+
+  <div class="card">
+    <div class="accent-line" style="background:linear-gradient(90deg,transparent,var(--green),transparent)"></div>
+    <div class="card-title" style="color:var(--green)"><span class="icon">💾</span> STORAGE</div>
+    <div id="disk-partitions"></div>
+    <div id="disk-models" style="margin-top:8px;font-size:10px;color:var(--text-muted);line-height:1.6"></div>
+  </div>
+</div>
+
+<!-- Row 2: GPUs (dynamic) -->
+<div class="grid3" id="gpu-row"></div>
+
+<!-- Row 3: Processes + CPU Temp -->
+<div class="grid2-1">
+  <div class="card">
+    <div class="accent-line" style="background:linear-gradient(90deg,transparent,var(--pink),transparent)"></div>
+    <div class="card-title" style="color:var(--pink)"><span class="icon">📊</span> TOP PROCESSES</div>
+    <table class="ptable">
+      <thead><tr><th>PID</th><th>Process</th><th class="r">CPU %</th><th class="r">RSS</th></tr></thead>
+      <tbody id="proc-body"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="accent-line" style="background:linear-gradient(90deg,transparent,var(--red),transparent)"></div>
+    <div class="card-title" style="color:var(--red)"><span class="icon">🌡️</span> CPU TEMPERATURE</div>
+    <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">
+      <span class="big-num-temp" id="cpu-temp-big">--</span>
+      <span class="detail">Tctl/Tdie</span>
+    </div>
+    <div class="sparkline-wrap"><svg class="spark" id="spark-temp" viewBox="0 0 100 100" preserveAspectRatio="none" height="60"></svg></div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-dark);margin-top:4px"><span>0°C</span><span>105°C</span></div>
+  </div>
+</div>
+
+<div class="footer" id="footer">◆ Connecting to backend... · Refresh 1s</div>
+
+<script>
+const HIST_LEN = 60;
+const hist = { cpu: [], ram: [], temp: [], gpu: {} };
+
+function pushHist(arr, val) {
+  arr.push(val);
+  if (arr.length > HIST_LEN) arr.shift();
+}
+
+function makeSpark(svgEl, data, max, color) {
+  if (!data.length || !svgEl) return;
+  const pts = data.map((v, i) => {
+    const x = data.length > 1 ? (i / (data.length - 1)) * 100 : 50;
+    const y = 100 - (Math.min(v, max) / max) * 100;
+    return `${x},${y}`;
+  }).join(' ');
+  const id = 'g' + color.replace('#','');
+  svgEl.innerHTML = `
+    <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="${color}" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="${color}" stop-opacity="0.02"/>
+    </linearGradient></defs>
+    <polygon points="0,100 ${pts} 100,100" fill="url(#${id})" />
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" vector-effect="non-scaling-stroke"/>`;
+}
+
+function tempColor(t) {
+  if (t > 80) return 'var(--red)';
+  if (t > 65) return 'var(--amber)';
+  return 'var(--green)';
+}
+
+const GPU_COLORS = ['#22d3ee', '#a78bfa', '#f59e0b', '#f472b6', '#34d399'];
+
+function buildGpuCards(gpus) {
+  const row = document.getElementById('gpu-row');
+  row.innerHTML = '';
+  gpus.forEach((g, i) => {
+    const accent = GPU_COLORS[i % GPU_COLORS.length];
+    const isIgpu = g.gpu_type === 'integrated';
+    const label = isIgpu ? 'iGPU' : `GPU ${g.index}`;
+    const vUsed = g.vram_used_b ? (g.vram_used_b / (1024**3)).toFixed(2) : '0';
+    const vTotal = g.vram_total_b ? (g.vram_total_b / (1024**3)).toFixed(2) : '0';
+    const vPct = g.vram_total_b > 0 ? ((g.vram_used_b || 0) / g.vram_total_b * 100) : 0;
+    const use = g.use_percent ?? 0;
+    const temp = g.temp_c ?? 0;
+
+    if (!hist.gpu[g.index]) hist.gpu[g.index] = [];
+    pushHist(hist.gpu[g.index], use);
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="accent-line" style="background:linear-gradient(90deg,transparent,${accent},transparent)"></div>
+      <div class="card-title" style="color:${accent}"><span class="icon">🔲</span> ${label}</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-bottom:8px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${g.name}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div class="stat-box"><div class="val" style="color:${accent}">${use}%</div><div class="lbl">Load</div></div>
+        <div class="stat-box"><div class="val" style="color:${tempColor(temp)}">${Math.round(temp)}°</div><div class="lbl">Temp</div></div>
+      </div>
+      <div class="gauge-row">
+        <div class="gauge-labels"><span class="k">VRAM</span><span class="v">${vUsed} / ${vTotal} GiB</span></div>
+        <div class="gauge"><div class="gauge-fill" style="background:${accent};width:${vPct.toFixed(1)}%"></div></div>
+      </div>
+      <div class="sparkline-wrap"><svg class="spark" id="spark-gpu-${g.index}" viewBox="0 0 100 100" preserveAspectRatio="none" height="28"></svg></div>`;
+    row.appendChild(card);
+
+    requestAnimationFrame(() => {
+      const svg = document.getElementById(`spark-gpu-${g.index}`);
+      if (svg) makeSpark(svg, hist.gpu[g.index], 100, accent);
+    });
+  });
+}
+
+function updateDash(d) {
+  const t = new Date(d.timestamp);
+  document.getElementById('clock').textContent = t.toLocaleTimeString('pl-PL', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('sysinfo').textContent = `${d.hostname} · ${d.os_name} · ${d.kernel} · ${d.ip}`;
+  document.getElementById('uptime').textContent = d.uptime_str;
+  document.getElementById('loadavg').textContent = d.load.map(l => l.toFixed(2)).join(' / ');
+
+  document.getElementById('cpu-pct').textContent = d.cpu_percent.toFixed(1) + '%';
+  document.getElementById('cpu-name').textContent = d.cpu_name;
+  document.getElementById('cpu-cores').textContent = d.cpu_cores;
+  document.getElementById('cpu-freq').textContent = d.cpu_freq_ghz + ' GHz';
+  const ct = d.cpu_temp;
+  const ctStr = ct != null ? ct.toFixed(1) + '°C' : 'n/a';
+  const ctEl = document.getElementById('cpu-temp-sm');
+  ctEl.textContent = ctStr;
+  ctEl.style.color = ct != null ? tempColor(ct) : 'var(--text-dim)';
+  document.getElementById('cpu-load1').textContent = d.load[0].toFixed(2);
+
+  document.getElementById('ram-used').textContent = d.ram_used_gib.toFixed(1);
+  document.getElementById('ram-total').textContent = '/ ' + d.ram_total_gib.toFixed(1) + ' GiB';
+  document.getElementById('ram-pct').textContent = d.ram_percent.toFixed(0) + '%';
+  document.getElementById('ram-bar').style.width = d.ram_percent + '%';
+  const swPct = d.swap_total_gib > 0 ? (d.swap_used_gib / d.swap_total_gib * 100) : 0;
+  document.getElementById('swap-info').textContent = d.swap_used_gib.toFixed(2) + ' / ' + d.swap_total_gib.toFixed(2) + ' GiB';
+  document.getElementById('swap-bar').style.width = swPct.toFixed(1) + '%';
+
+  // RAM modules
+  const ramModEl = document.getElementById('ram-modules');
+  if (d.ram_modules && d.ram_modules.length > 0) {
+    const seen = {};
+    const unique = [];
+    d.ram_modules.forEach(m => {
+      const key = m.part_number || m.manufacturer || '';
+      if (!seen[key]) { seen[key] = 0; }
+      seen[key]++;
+      if (seen[key] === 1) unique.push(m);
+    });
+    ramModEl.innerHTML = unique.map(m => {
+      const count = seen[m.part_number || m.manufacturer || ''];
+      const prefix = count > 1 ? `${count}× ` : '';
+      const mfg = m.manufacturer || '';
+      const pn = m.part_number || '';
+      const spd = m.speed || '';
+      const tp = m.type || '';
+      const sz = m.size || '';
+      return `<div style="color:var(--text-dim)">🔸 ${prefix}<span style="color:var(--text);font-family:var(--mono)">${mfg} ${pn}</span><br>&nbsp;&nbsp;&nbsp;&nbsp;${sz} ${tp} @ ${spd}</div>`;
+    }).join('');
+  }
+
+  // Disk partitions
+  const dpEl = document.getElementById('disk-partitions');
+  if (d.disk_partitions && d.disk_partitions.length > 0) {
+    dpEl.innerHTML = d.disk_partitions.map(p => {
+      const totalTiB = p.total_gib / 1024;
+      const usedLabel = p.total_gib >= 1024 ? (p.used_gib / 1024).toFixed(2) + ' TiB' : p.used_gib.toFixed(0) + ' GiB';
+      const totalLabel = totalTiB >= 1 ? totalTiB.toFixed(2) + ' TiB' : p.total_gib.toFixed(0) + ' GiB';
+      const freeGib = p.total_gib - p.used_gib;
+      const freeLabel = freeGib >= 1024 ? (freeGib / 1024).toFixed(2) + ' TiB' : freeGib.toFixed(0) + ' GiB';
+      return `
+        <div style="margin-bottom:8px">
+          <div class="gauge-labels"><span class="k">${p.mount} (${p.fs})</span><span class="v">${usedLabel} / ${totalLabel}</span></div>
+          <div class="gauge"><div class="gauge-fill" style="background:var(--green);width:${p.percent}%"></div></div>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px">Free: <span style="color:var(--text);font-family:var(--mono)">${freeLabel}</span> · ${p.percent.toFixed(1)}% used</div>
+        </div>`;
+    }).join('');
+  } else {
+    // fallback to single disk
+    const dTiB = (d.disk_total_gib / 1024).toFixed(2);
+    dpEl.innerHTML = `
+      <div class="gauge-row">
+        <div class="gauge-labels"><span class="k">${d.disk_mount} (${d.disk_fs || 'ext4'})</span><span class="v">${d.disk_used_gib.toFixed(0)} GiB / ${dTiB} TiB</span></div>
+        <div class="gauge"><div class="gauge-fill" style="background:var(--green);width:${d.disk_percent}%"></div></div>
+      </div>
+      <div class="detail" style="margin-top:8px">Free: <span style="font-family:var(--mono)">${((d.disk_total_gib - d.disk_used_gib) / 1024).toFixed(2)} TiB</span></div>`;
+  }
+
+  // Disk hardware models
+  const diskModEl = document.getElementById('disk-models');
+  if (d.disks && d.disks.length > 0) {
+    diskModEl.innerHTML = d.disks.map(dk => {
+      const tran = dk.tran ? dk.tran.toUpperCase() : '';
+      const badge = tran ? `<span style="color:var(--green);font-weight:600">${tran}</span> ` : '';
+      return `<div>💿 ${badge}<span style="color:var(--text);font-family:var(--mono)">${dk.model || dk.name}</span> <span style="color:var(--text-dim)">${dk.size}</span></div>`;
+    }).join('');
+  }
+
+  buildGpuCards(d.gpus || []);
+
+  const pb = document.getElementById('proc-body');
+  pb.innerHTML = (d.processes || []).map(p => {
+    const cpuCol = p.cpu > 50 ? 'var(--red)' : p.cpu > 10 ? 'var(--amber)' : 'var(--text-dim)';
+    return `<tr><td class="pid">${p.pid}</td><td class="pname">${p.name}</td><td class="r" style="color:${cpuCol}">${p.cpu.toFixed(1)}</td><td class="r" style="color:var(--text-dim)">${p.mem_mib.toFixed(0)} MiB</td></tr>`;
+  }).join('');
+
+  const ctBig = document.getElementById('cpu-temp-big');
+  ctBig.textContent = ct != null ? ct.toFixed(1) + '°C' : 'n/a';
+  ctBig.style.color = ct != null ? tempColor(ct) : 'var(--text-dim)';
+
+  pushHist(hist.cpu, d.cpu_percent);
+  pushHist(hist.ram, d.ram_percent);
+  if (ct != null) pushHist(hist.temp, ct);
+
+  makeSpark(document.getElementById('spark-cpu'), hist.cpu, 100, '#22d3ee');
+  makeSpark(document.getElementById('spark-ram'), hist.ram, 100, '#a78bfa');
+  makeSpark(document.getElementById('spark-temp'), hist.temp, 105, '#f87171');
+
+  document.getElementById('footer').textContent = `◆ Live from ${d.hostname} · Refresh 1s · ${t.toLocaleDateString('pl-PL')}`;
+}
+
+function connectWS() {
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  const wsUrl = `${proto}://${location.hostname}:8000/ws`;
+  const dot = document.getElementById('ws-dot');
+  const status = document.getElementById('ws-status');
+
+  const ws = new WebSocket(wsUrl);
+  ws.onopen = () => { dot.className = 'status-dot ok'; status.textContent = 'live'; };
+  ws.onmessage = (e) => { try { updateDash(JSON.parse(e.data)); } catch {} };
+  ws.onclose = () => { dot.className = 'status-dot err'; status.textContent = 'reconnecting...'; setTimeout(connectWS, 2000); };
+  ws.onerror = () => ws.close();
+}
+
+connectWS();
+</script>
+</body>
+</html>
