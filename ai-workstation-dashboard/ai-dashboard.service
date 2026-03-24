@@ -1,0 +1,25 @@
+[Unit]
+Description=AI Workstation Dashboard
+After=network.target
+
+[Service]
+Type=simple
+
+WorkingDirectory=/opt/ai-dashboard
+
+ExecStart=/opt/ai-dashboard/start.sh
+
+Restart=always
+RestartSec=3
+
+User=aiuser
+Group=aiuser
+
+StandardOutput=journal
+StandardError=journal
+
+
+Environment=PORT=8000
+
+[Install]
+WantedBy=multi-user.target
