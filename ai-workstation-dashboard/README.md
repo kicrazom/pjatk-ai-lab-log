@@ -51,7 +51,8 @@ ai-dashboard.service       ← systemd unit for autostart
 Server binds to `0.0.0.0:8000`:
 
 ```
-http://192.168.72.104:8000
+http://localhost:8000
+http://<host-ip>:8000
 ```
 
 ## Autostart with systemd
