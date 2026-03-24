@@ -1,7 +1,7 @@
 # AI Workstation Dashboard
 
 ##Dashboard Preview
-![AI Workstation Dashboard](assets/dashboard.png)
+![AI Workstation Dashboard](assets/Screenshot_AI_Workstation_Dashboard.png)
 
 Real-time system monitoring dashboard for AMD AI workstations.
 Built for: Ryzen 9 9950X3D + 2× Radeon AI PRO R9700 + Kubuntu 24.04
