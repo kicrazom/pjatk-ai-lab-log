@@ -1,5 +1,5 @@
 # AI Workstation Dashboard
-Real-time system monitoring dashboard for AMD AI workstations.  
+System-level monitoring dashboard for local AI/LLM workstations with multi-GPU (ROCm) support.
 Built for Ryzen 9 9950X3D + 2× Radeon AI PRO R9700 + Kubuntu 24.04.
 
 ## Dashboard Preview
@@ -51,8 +51,8 @@ ai-dashboard.service       ← systemd unit for autostart
 Server binds to `0.0.0.0:8000`:
 
 ```
-http://localhost:8000
-http://<host-ip>:8000
+- Local: http://localhost:8000
+- Network: http://<host-ip>:8000
 ```
 
 ## Autostart with systemd
