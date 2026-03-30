@@ -4,12 +4,12 @@ Source: `lspci` on Kubuntu 24.04
 
 ## Discrete GPUs
 
-| BDF     | Device          | Path (root port → switch → endpoint)     |
-|---------|-----------------|-------------------------------------------|
-| 03:00.0 | AMD/ATI 7551    | 00:01.1 → 01:00.0 (upstream) → 02:00.0 (downstream) → **03:00.0** |
-| 07:00.0 | AMD/ATI 7551    | 00:01.3 → 05:00.0 (upstream) → 06:00.0 (downstream) → **07:00.0** |
+| BDF     | Device          | Link (negotiated)    | IOMMU group | Path (root port → switch → endpoint)     |
+|---------|-----------------|----------------------|-------------|-------------------------------------------|
+| 03:00.0 | AMD/ATI 7551    | PCIe 5.0 x16 (32 GT/s) | 17       | 00:01.1 → 01:00.0 → 02:00.0 → **03:00.0** |
+| 07:00.0 | AMD/ATI 7551    | PCIe 5.0 x16 (32 GT/s) | 22       | 00:01.3 → 05:00.0 → 06:00.0 → **07:00.0** |
 
-Both GPUs sit behind separate root ports (00:01.1 and 00:01.3) with individual Navi 10 XL PCIe switches.
+Both GPUs on separate root ports (00:01.1, 00:01.3), separate IOMMU groups, full x16 bandwidth each.
 
 ## NVMe Storage
 
@@ -53,5 +53,5 @@ Both GPUs sit behind separate root ports (00:01.1 and 00:01.3) with individual N
 ## Verification checklist
 
 - [x] Both discrete GPUs on separate root ports (00:01.1, 00:01.3)
-- [ ] Both GPUs at PCIe 4.0 x16 — run: `lspci -vv -s 03:00.0 | grep LnkSta` and `lspci -vv -s 07:00.0 | grep LnkSta`
-- [ ] IOMMU groups confirmed separate — run: `for d in /sys/kernel/iommu_groups/*/devices/*; do echo "$(basename $(dirname $(dirname $d))): $(lspci -nns $(basename $d))"; done | grep 7551`
+- [x] Both GPUs at PCIe 5.0 x16 (32 GT/s) — full bandwidth confirmed
+- [x] IOMMU groups confirmed separate (group 17, group 22)
