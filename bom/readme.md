@@ -1,8 +1,14 @@
-# Hardware
+# AI Workstation – Hardware & Infrastructure (BOM)
 
-This directory contains hardware documentation for the AI workstation.
+## Overview
+This directory contains the full hardware specification, power infrastructure, and low-level system integrations of the AI workstation.
 
-# AI Workstation – Hardware BOM
+It documents real-world configuration, troubleshooting, and validated solutions.
+
+---
+
+## Hardware
+Full system specification (CPU, GPU, RAM, storage).
 
 ## CPU
 AMD Ryzen 9 9950X3D
@@ -26,3 +32,45 @@ Input: IEC C20
 
 ## Case
 ASUS ProArt PA602 Wood Metal PWM Black
+
+---
+
+## Power & UPS
+Power delivery, UPS setup, and Linux integration.
+
+power_ups_cables.md  
+nut-ups_armac-integration.md  
+
+---
+
+## PCIe / System topology
+GPU layout and PCIe bandwidth analysis.
+
+pci-topology.md
+
+---
+
+## Logbook / Real-world debugging
+Integration issues, fixes, and validated configurations.
+
+---
+
+## Key notes
+
+- UPS (ARMAC PF1) works via **serial-over-USB (CH340)**  
+- Not compatible with `usbhid-ups`  
+- Fully operational with `nutdrv_qx`  
+- No kernel downgrade required (tested on 6.17)  
+
+---
+
+## Status
+
+✔ Production-ready hardware stack  
+✔ Working UPS monitoring (NUT)  
+✔ Power failure detection validated  
+
+
+
+
+
