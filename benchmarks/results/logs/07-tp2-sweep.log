@@ -1,0 +1,12 @@
+Output tokens total: 25563
+Output throughput:   2615.1 tok/s
+Requests/second:     20.46
+---
+Output tokens total: 38237
+Output throughput:   2327.0 tok/s
+Requests/second:     18.26
+---
+Output tokens total: 63814
+Output throughput:   2968.6 tok/s
+Requests/second:     23.26
+---
