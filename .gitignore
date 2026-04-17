@@ -1,3 +1,6 @@
 
 # Sanity test artifacts
 benchmarks/results/thermal-runs/.sanity/
+
+# Root-level logs directory (duplicates benchmarks/results/logs/)
+/logs/
