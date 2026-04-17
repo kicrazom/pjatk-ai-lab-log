@@ -1,0 +1,129 @@
+nohup: zignorowane dane wejściowe
+============================================
+Plan A sweep started: pią, 17 kwi 2026, 21:50:48 CEST
+N values: 50 100 200 500 1000 2000 3000
+TP values: 1 2
+Cooldown between runs: 45s
+Total runs: 14
+Output: /home/mozarcik/pjatk-ai-lab-log/benchmarks/results/thermal-runs
+============================================
+
+--- Run 1/14: tp1-n50 ---
+Time: 21:50:48 | Elapsed: 0min
+  Total time:          6.02s
+  Output throughput:   1057.0 tok/s
+  Requests/second:     8.30
+Cooldown 45s...
+
+--- Run 2/14: tp1-n100 ---
+Time: 21:52:20 | Elapsed: 1min
+  Total time:          7.10s
+  Output throughput:   1787.3 tok/s
+  Requests/second:     14.09
+Cooldown 45s...
+
+--- Run 3/14: tp1-n200 ---
+Time: 21:53:53 | Elapsed: 3min
+  Total time:          7.67s
+  Output throughput:   3327.3 tok/s
+  Requests/second:     26.06
+Cooldown 45s...
+
+--- Run 4/14: tp1-n500 ---
+Time: 21:55:27 | Elapsed: 4min
+  Total time:          16.51s
+  Output throughput:   3866.4 tok/s
+  Requests/second:     30.28
+Cooldown 45s...
+
+--- Run 5/14: tp1-n1000 ---
+Time: 21:57:10 | Elapsed: 6min
+  Total time:          33.00s
+  Output throughput:   3862.5 tok/s
+  Requests/second:     30.30
+Cooldown 45s...
+
+--- Run 6/14: tp1-n2000 ---
+Time: 21:59:08 | Elapsed: 8min
+  Total time:          65.73s
+  Output throughput:   3880.4 tok/s
+  Requests/second:     30.43
+Cooldown 45s...
+
+--- Run 7/14: tp1-n3000 ---
+Time: 22:01:40 | Elapsed: 10min
+  Total time:          99.48s
+  Output throughput:   3847.7 tok/s
+  Requests/second:     30.16
+Cooldown 45s...
+
+--- Run 8/14: tp2-n50 ---
+Time: 22:04:46 | Elapsed: 13min
+  Total time:          5.55s
+  Output throughput:   1153.9 tok/s
+  Requests/second:     9.02
+Cooldown 45s...
+
+--- Run 9/14: tp2-n100 ---
+Time: 22:06:30 | Elapsed: 15min
+  Total time:          7.18s
+  Output throughput:   1772.3 tok/s
+  Requests/second:     13.92
+Cooldown 45s...
+
+--- Run 10/14: tp2-n200 ---
+Time: 22:08:14 | Elapsed: 17min
+  Total time:          9.71s
+  Output throughput:   2627.9 tok/s
+  Requests/second:     20.60
+Cooldown 45s...
+
+--- Run 11/14: tp2-n500 ---
+Time: 22:10:01 | Elapsed: 19min
+  Total time:          21.70s
+  Output throughput:   2937.5 tok/s
+  Requests/second:     23.05
+Cooldown 45s...
+
+--- Run 12/14: tp2-n1000 ---
+Time: 22:11:57 | Elapsed: 21min
+  Total time:          43.30s
+  Output throughput:   2945.7 tok/s
+  Requests/second:     23.10
+Cooldown 45s...
+
+--- Run 13/14: tp2-n2000 ---
+Time: 22:14:16 | Elapsed: 23min
+  Total time:          86.75s
+  Output throughput:   2942.1 tok/s
+  Requests/second:     23.05
+Cooldown 45s...
+
+--- Run 14/14: tp2-n3000 ---
+Time: 22:17:18 | Elapsed: 26min
+  Total time:          131.38s
+  Output throughput:   2917.0 tok/s
+  Requests/second:     22.83
+
+============================================
+Plan A complete: pią, 17 kwi 2026, 22:20:22 CEST, total 29min
+============================================
+
+=== All results ===
+  TP=1 N=50    throughput=1057.0 tok/s
+  TP=1 N=100   throughput=1787.3 tok/s
+  TP=1 N=200   throughput=3327.3 tok/s
+  TP=1 N=500   throughput=3866.4 tok/s
+  TP=1 N=1000  throughput=3862.5 tok/s
+  TP=1 N=2000  throughput=3880.4 tok/s
+  TP=1 N=3000  throughput=3847.7 tok/s
+  TP=2 N=50    throughput=1153.9 tok/s
+  TP=2 N=100   throughput=1772.3 tok/s
+  TP=2 N=200   throughput=2627.9 tok/s
+  TP=2 N=500   throughput=2937.5 tok/s
+  TP=2 N=1000  throughput=2945.7 tok/s
+  TP=2 N=2000  throughput=2942.1 tok/s
+  TP=2 N=3000  throughput=2917.0 tok/s
+
+Summary: /home/mozarcik/pjatk-ai-lab-log/benchmarks/results/thermal-runs/plan-a-summary.log
+Next: regenerate chart with updated data

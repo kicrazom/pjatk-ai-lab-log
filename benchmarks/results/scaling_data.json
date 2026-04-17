@@ -20,33 +20,98 @@
     "model": "Qwen/Qwen2.5-7B-Instruct",
     "dtype": "float16",
     "max_model_len": 4096,
-    "gpu_memory_utilization": 0.70,
+    "gpu_memory_utilization": 0.7,
     "enforce_eager": true,
     "max_tokens_per_request": 128,
     "input_tokens_mean": 13.4,
     "output_tokens_mean": 126.9,
-    "note": "Prompts share common template prefix; prefix caching active. enforce_eager required as workaround for HSA_STATUS_ERROR_INVALID_PACKET_FORMAT on gfx1201 in vLLM 0.19+rocm721."
+    "note": "Prompts share common template prefix; prefix caching active. enforce_eager=True required as workaround for HSA_STATUS_ERROR_INVALID_PACKET_FORMAT on gfx1201 during CUDA-graph capture."
   },
   "runs": {
     "tp1": [
-      {"n_prompts": 10,  "output_throughput_toks": 239.1},
-      {"n_prompts": 25,  "output_throughput_toks": 562.3},
-      {"n_prompts": 50,  "output_throughput_toks": 1054.0},
-      {"n_prompts": 100, "output_throughput_toks": 1785.7},
-      {"n_prompts": 200, "output_throughput_toks": 3351.1},
-      {"n_prompts": 300, "output_throughput_toks": 2675.4},
-      {"n_prompts": 500, "output_throughput_toks": 3852.9}
+      {
+        "n_prompts": 50,
+        "output_throughput_toks": 1057.0
+      },
+      {
+        "n_prompts": 100,
+        "output_throughput_toks": 1787.3
+      },
+      {
+        "n_prompts": 200,
+        "output_throughput_toks": 3327.3
+      },
+      {
+        "n_prompts": 500,
+        "output_throughput_toks": 3866.4
+      },
+      {
+        "n_prompts": 1000,
+        "output_throughput_toks": 3862.5
+      },
+      {
+        "n_prompts": 2000,
+        "output_throughput_toks": 3880.4
+      },
+      {
+        "n_prompts": 3000,
+        "output_throughput_toks": 3847.7
+      }
     ],
     "tp2": [
-      {"n_prompts": 100, "output_throughput_toks": 1751.6},
-      {"n_prompts": 200, "output_throughput_toks": 2615.1},
-      {"n_prompts": 300, "output_throughput_toks": 2327.0},
-      {"n_prompts": 500, "output_throughput_toks": 2968.6}
+      {
+        "n_prompts": 50,
+        "output_throughput_toks": 1153.9
+      },
+      {
+        "n_prompts": 100,
+        "output_throughput_toks": 1772.3
+      },
+      {
+        "n_prompts": 200,
+        "output_throughput_toks": 2627.9
+      },
+      {
+        "n_prompts": 500,
+        "output_throughput_toks": 2937.5
+      },
+      {
+        "n_prompts": 1000,
+        "output_throughput_toks": 2945.7
+      },
+      {
+        "n_prompts": 2000,
+        "output_throughput_toks": 2942.1
+      },
+      {
+        "n_prompts": 3000,
+        "output_throughput_toks": 2917.0
+      }
     ]
   },
   "kv_cache": {
-    "tp1": {"size_tokens": 120944, "max_concurrency_4k": 29.53},
-    "tp2": {"size_tokens": 487296, "max_concurrency_4k": 118.97}
+    "tp1": {
+      "size_tokens": 120944,
+      "max_concurrency_4k": 29.53,
+      "size_gib": 6.46
+    },
+    "tp2": {
+      "size_tokens": 487296,
+      "max_concurrency_4k": 118.97,
+      "size_gib": 13.0
+    }
   },
-  "date": "2026-04-17"
+  "plateaus": {
+    "tp1_peak": {
+      "throughput_toks": 3870,
+      "stable_from_n": 500
+    },
+    "tp2_peak": {
+      "throughput_toks": 2940,
+      "stable_from_n": 500
+    },
+    "pcie_tax_percent": 24
+  },
+  "date": "2026-04-17",
+  "sweep": "Plan A full concurrency sweep with thermal instrumentation"
 }

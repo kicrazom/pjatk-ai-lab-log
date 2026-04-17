@@ -1,0 +1,12 @@
+[
+  {
+    "t": 5.0,
+    "label": "bench start (TP=1, N=3000)",
+    "color": "#2ca02c"
+  },
+  {
+    "t": 132.53,
+    "label": "bench end",
+    "color": "#d62728"
+  }
+]
