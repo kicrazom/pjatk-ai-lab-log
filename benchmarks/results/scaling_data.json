@@ -1,0 +1,52 @@
+{
+  "hardware": {
+    "cpu": "AMD Ryzen 9 9950X3D",
+    "gpu_model": "AMD Radeon AI PRO R9700",
+    "gpu_arch": "gfx1201 (RDNA 4)",
+    "gpu_vram_gb": 32,
+    "gpu_count": 2,
+    "ram_gb": 96,
+    "ram_speed": "DDR5-6000"
+  },
+  "software": {
+    "os": "Kubuntu 24.04",
+    "kernel": "6.17",
+    "rocm": "7.2.1",
+    "vllm": "0.19.0+rocm721",
+    "pytorch": "2.10.0+git8514f05",
+    "nccl": "2.27.7"
+  },
+  "workload": {
+    "model": "Qwen/Qwen2.5-7B-Instruct",
+    "dtype": "float16",
+    "max_model_len": 4096,
+    "gpu_memory_utilization": 0.70,
+    "enforce_eager": true,
+    "max_tokens_per_request": 128,
+    "input_tokens_mean": 13.4,
+    "output_tokens_mean": 126.9,
+    "note": "Prompts share common template prefix; prefix caching active. enforce_eager required as workaround for HSA_STATUS_ERROR_INVALID_PACKET_FORMAT on gfx1201 in vLLM 0.19+rocm721."
+  },
+  "runs": {
+    "tp1": [
+      {"n_prompts": 10,  "output_throughput_toks": 239.1},
+      {"n_prompts": 25,  "output_throughput_toks": 562.3},
+      {"n_prompts": 50,  "output_throughput_toks": 1054.0},
+      {"n_prompts": 100, "output_throughput_toks": 1785.7},
+      {"n_prompts": 200, "output_throughput_toks": 3351.1},
+      {"n_prompts": 300, "output_throughput_toks": 2675.4},
+      {"n_prompts": 500, "output_throughput_toks": 3852.9}
+    ],
+    "tp2": [
+      {"n_prompts": 100, "output_throughput_toks": 1751.6},
+      {"n_prompts": 200, "output_throughput_toks": 2615.1},
+      {"n_prompts": 300, "output_throughput_toks": 2327.0},
+      {"n_prompts": 500, "output_throughput_toks": 2968.6}
+    ]
+  },
+  "kv_cache": {
+    "tp1": {"size_tokens": 120944, "max_concurrency_4k": 29.53},
+    "tp2": {"size_tokens": 487296, "max_concurrency_4k": 118.97}
+  },
+  "date": "2026-04-17"
+}
