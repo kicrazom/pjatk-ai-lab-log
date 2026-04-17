@@ -1,6 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
 
-# Sanity test artifacts
-benchmarks/results/thermal-runs/.sanity/
+# Virtual environments
+.venv/
+venv/
+env/
 
-# Root-level logs directory (duplicates benchmarks/results/logs/)
+# OS
+.DS_Store
+Thumbs.db
+.Trash-*/
+
+# Editor
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# Secrets
+.env
+.env.local
+secrets.yml
+
+# Repo-specific
 /logs/
+benchmarks/results/thermal-runs/.sanity/
