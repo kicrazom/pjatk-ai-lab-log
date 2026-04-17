@@ -76,6 +76,17 @@ From `tp2-n3000-thermals.png` (longest single run, 131s of active compute):
   and browser rendering. Adds small thermal load but does not impact benchmark
   throughput (iGPU is not in compute path).
 
+
+### Thermal timelines across concurrency levels
+
+Six representative runs showing how the system heats up as concurrency
+increases, for both TP=1 (top row) and TP=2 (bottom row). All 14 runs
+stay comfortably below the 95C throttle threshold.
+
+![Thermal gallery](thermal_gallery.png)
+
+Individual per-run thermals in `thermal-runs/tp*-n*-thermals.png`.
+
 ## Files
 
 | File | Purpose |
