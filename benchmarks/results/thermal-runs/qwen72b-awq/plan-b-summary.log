@@ -1,0 +1,78 @@
+============================================
+Plan B sweep started: pią, 24 kwi 2026, 22:04:53 CEST
+Model: Qwen 2.5 72B AWQ (local)
+N values: 10 25 50 100 200 500 1000
+TP values: 2
+Cooldown between runs: 60s
+Config: H3 (enforce_eager=True, no debug flags)
+Total runs: 7
+Output: /home/mozarcik/pjatk-ai-lab-log/benchmarks/results/thermal-runs/qwen72b-awq
+============================================
+
+--- Run 1/7: tp2-n10 ---
+Time: 22:04:53 | Elapsed: 0min
+  Load time: 76.4s
+  Total time:          92.82s
+  Output throughput:   13.8 tok/s
+  Requests/second:     0.11
+Cooldown 60s...
+
+--- Run 2/7: tp2-n25 ---
+Time: 22:10:35 | Elapsed: 5min
+  Load time: 76.4s
+  Total time:          97.56s
+  Output throughput:   32.8 tok/s
+  Requests/second:     0.26
+Cooldown 60s...
+
+--- Run 3/7: tp2-n50 ---
+Time: 22:16:23 | Elapsed: 11min
+  Load time: 76.8s
+  Total time:          104.99s
+  Output throughput:   61.0 tok/s
+  Requests/second:     0.48
+Cooldown 60s...
+
+--- Run 4/7: tp2-n100 ---
+Time: 22:22:19 | Elapsed: 17min
+  Load time: 76.4s
+  Total time:          116.24s
+  Output throughput:   110.1 tok/s
+  Requests/second:     0.86
+Cooldown 60s...
+
+--- Run 5/7: tp2-n200 ---
+Time: 22:28:25 | Elapsed: 23min
+  Load time: 76.9s
+  Total time:          217.57s
+  Output throughput:   117.6 tok/s
+  Requests/second:     0.92
+Cooldown 60s...
+
+--- Run 6/7: tp2-n500 ---
+Time: 22:36:14 | Elapsed: 31min
+  Load time: 76.7s
+  Total time:          526.19s
+  Output throughput:   121.5 tok/s
+  Requests/second:     0.95
+Cooldown 60s...
+
+--- Run 7/7: tp2-n1000 ---
+Time: 22:49:11 | Elapsed: 44min
+  Load time: 77.4s
+  Total time:          1051.19s
+  Output throughput:   121.7 tok/s
+  Requests/second:     0.95
+
+============================================
+Plan B complete: pią, 24 kwi 2026, 23:09:54 CEST, total 65min
+============================================
+
+=== All results ===
+  TP=2 N=10    throughput=13.8 tok/s
+  TP=2 N=25    throughput=32.8 tok/s
+  TP=2 N=50    throughput=61.0 tok/s
+  TP=2 N=100   throughput=110.1 tok/s
+  TP=2 N=200   throughput=117.6 tok/s
+  TP=2 N=500   throughput=121.5 tok/s
+  TP=2 N=1000  throughput=121.7 tok/s
