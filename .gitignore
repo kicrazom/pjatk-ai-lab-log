@@ -29,4 +29,12 @@ secrets.yml
 
 # Repo-specific
 /logs/
-benchmarks/results/thermal-runs/.sanity/
+benchmarks/results/thermal-runs/.sanity
+
+# Backup files (any *.bak in repo)
+*.bak
+
+# Download infrastructure scripts (bootstrap-only, not part of research)
+scripts/download_models.sh
+scripts/download_watchdog.sh
+scripts/download_progress.py
