@@ -1,0 +1,30 @@
+
+=== System ===
+Linux ai-workstation 6.17.0-22-generic #22~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Mar 26 15:25:54 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+
+=== Distribution ===
+Distributor ID:	Ubuntu
+Description:	Ubuntu 24.04.4 LTS
+Release:	24.04
+Codename:	noble
+
+=== ROCm ===
+ROCM-SMI version: 4.0.0+fc0010cf6a
+ROCM-SMI-LIB version: 7.8.0
+
+=== CPU ===
+Architektura:                        x86_64
+Tryb(y) pracy CPU:                   32-bit, 64-bit
+Rozmiary adresów:                    48 bits physical, 48 bits virtual
+Kolejność bajtów:                    Little Endian
+CPU:                                 32
+Lista aktywnych CPU:                 0-31
+ID producenta:                       AuthenticAMD
+Nazwa modelu:                        AMD Ryzen 9 9950X3D 16-Core Processor
+Rodzina CPU:                         26
+Model:                               68
+Wątków na rdzeń:                     2
+Rdzeni na gniazdo:                   16
+Gniazd:                              1
+Wersja:                              0
+Zwiększenie częstotliwości:          włączone

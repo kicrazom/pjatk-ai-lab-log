@@ -1,0 +1,8 @@
+=== Critical software versions (2026-04-26) ===
+Python:      3.12.3
+vLLM:        0.19.0
+PyTorch:     2.10.0+git8514f05
+HIP:         7.2.53211
+flash_attn:  2.8.3
+triton:      3.6.0
+transformers:4.57.6
