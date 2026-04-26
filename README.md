@@ -41,7 +41,7 @@ power topology, and PCIe layout.
 Full concurrency sweep of Qwen 2.5 7B Instruct on vLLM 0.19 with both
 tensor-parallel configurations, including per-run thermal instrumentation.
 
-![Scaling curve](benchmarks/results/scaling_curve.png)
+![Scaling curve](benchmarks/results/qwen2.5-7b-fp16/scaling_curve.png)
 
 **Key findings:**
 
@@ -51,9 +51,10 @@ tensor-parallel configurations, including per-run thermal instrumentation.
 - Thermal asymmetry between GPU 0 and GPU 1 (5C delta) — same workload,
   airflow-dependent
 
-See [`benchmarks/results/README.md`](benchmarks/results/README.md) for the
-full writeup, all 14 measurement points, thermal observations, and planned
-next experiments (Qwen 72B AWQ, Polish-language models, long-form decode).
+See [`benchmarks/results/qwen2.5-7b-fp16/README.md`](benchmarks/results/qwen2.5-7b-fp16/README.md)
+for the full writeup, all 14 measurement points, thermal observations, and
+planned next experiments (Qwen 72B AWQ, Qwen 3.6 27B BF16/FP8, Polish-language
+models, long-form decode).
 
 ## Focus areas
 

@@ -89,19 +89,29 @@ Individual per-run thermals in `thermal-runs/tp*-n*-thermals.png`.
 
 ## Files
 
-| File | Purpose |
+In this directory:
+
+| Path | Purpose |
 |---|---|
 | `scaling_data.json` | Complete Plan A measurements (14 points) + hw/sw context |
 | `scaling_curve.png` | 2-panel chart (throughput + latency trade-off) |
-| `plot_scaling.py` | Regenerator from JSON |
-| `sweep_concurrent.py` | Additional sweep runner with JSON merge |
-| `bench_with_thermals.py` | Wrapper orchestrating sampler + benchmark + plot |
-| `sample_system.py` | Background CPU/GPU/iGPU sampler to JSONL |
-| `plot_thermals.py` | Timeline plotter for thermal JSONL |
-| `run_plan_a.sh` | Orchestrator for full Plan A sweep |
-| `logs/` | Raw vLLM stdout from earlier exploratory benchmarks |
-| `scripts/` | Benchmark source scripts |
+| `thermal_gallery.png` | Per-N thermal mosaic across both TP configs |
 | `thermal-runs/` | Plan A per-run artifacts (JSONL + PNG + logs + events) |
+| `logs/` | Raw vLLM stdout from earlier exploratory benchmarks |
+| `sanity/` | (gitignored) Smoke-test outputs |
+
+Code lives under `benchmarks/scripts/` (shared across all model studies):
+
+| Path | Purpose |
+|---|---|
+| `../../scripts/plotting/plot_scaling.py` | Regenerator from JSON |
+| `../../scripts/plotting/plot_thermals.py` | Timeline plotter for thermal JSONL |
+| `../../scripts/plotting/plot_thermal_gallery.py` | Mosaic plotter |
+| `../../scripts/instrumentation/sample_system.py` | Background CPU/GPU/iGPU sampler to JSONL |
+| `../../scripts/instrumentation/bench_with_thermals.py` | Wrapper orchestrating sampler + benchmark + plot |
+| `../../scripts/instrumentation/sweep_concurrent.py` | Additional sweep runner with JSON merge |
+| `../../scripts/runners/test_concurrent.py` | The actual benchmark (run by the wrapper) |
+| `../../scripts/orchestrators/run_plan_a.sh` | Orchestrator for full Plan A sweep |
 
 ## Reproducing
 
@@ -114,14 +124,21 @@ export VLLM_ROCM_USE_AITER=0
 export AMD_SERIALIZE_KERNEL=3
 export HIP_LAUNCH_BLOCKING=1
 
+# From repo root:
+REPO=$(git rev-parse --show-toplevel)
+
 # Single run with thermal instrumentation
-python bench_with_thermals.py 1 100 --name tp1-n100 --out-dir thermal-runs/
+python "$REPO/benchmarks/scripts/instrumentation/bench_with_thermals.py" 1 100 \
+    --name tp1-n100 \
+    --out-dir "$REPO/benchmarks/results/qwen2.5-7b-fp16/thermal-runs/"
 
 # Full Plan A sweep (~30 min)
-./run_plan_a.sh
+"$REPO/benchmarks/scripts/orchestrators/run_plan_a.sh"
 
 # Regenerate chart after new data
-python plot_scaling.py scaling_data.json scaling_curve.png
+python "$REPO/benchmarks/scripts/plotting/plot_scaling.py" \
+    "$REPO/benchmarks/results/qwen2.5-7b-fp16/scaling_data.json" \
+    "$REPO/benchmarks/results/qwen2.5-7b-fp16/scaling_curve.png"
 ```
 
 ## Configuration notes

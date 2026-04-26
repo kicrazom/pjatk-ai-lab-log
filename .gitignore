@@ -29,7 +29,7 @@ secrets.yml
 
 # Repo-specific
 /logs/
-benchmarks/results/thermal-runs/.sanity
+benchmarks/results/qwen2.5-7b-fp16/sanity/
 
 # Backup files (any *.bak in repo)
 *.bak

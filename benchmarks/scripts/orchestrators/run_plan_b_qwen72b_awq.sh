@@ -1,21 +1,31 @@
 #!/bin/bash
-# Plan A — full sweep with thermal instrumentation
-# 7 concurrency levels × 2 TP configs = 14 runs
+### Plan B - Qwen 72B AWQ TP=2 concurrency sweep with thermal/power instrumentation
+### 7 concurrency levels x 1 TP config = 7 runs
+### TP=1 excluded: 72B AWQ (39 GB) does not fit on single 32 GB R9700
+###
+### Based on run_plan_a.sh (Qwen 7B) with adjustments for 72B AWQ:
+### - N values scaled for smaller KV cache (32k tokens vs 7B's 120k)
+### - TP=1 removed (architectural constraint)
+### - Env vars per H3 finding (2026-04-24): enforce_eager=True is sufficient,
+###   AMD_SERIALIZE_KERNEL / HIP_LAUNCH_BLOCKING removed (36%+ overhead)
+### - Cooldown raised to 60s (72B warmup takes ~90s, cards stay warm longer)
 
-set -u  # error on unset vars
+set -u
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-OUT_DIR="$HERE/thermal-runs"
-SUMMARY="$HERE/thermal-runs/plan-a-summary.log"
+REPO_ROOT="$(git -C "$HERE" rev-parse --show-toplevel)"
+OUT_DIR="$REPO_ROOT/benchmarks/results/qwen2.5-72b-awq/pilot"
+SUMMARY="$OUT_DIR/plan-b-summary.log"
 
-# Plan A: logarithmic spacing; 3000 (not 5000) as last point per user decision
-N_VALUES=(50 100 200 500 1000 2000 3000)
-TP_VALUES=(1 2)
-COOLDOWN_S=45
+### N sweep for 72B - logarithmic spacing, ceiling at KV cache preemption point
+### 72B has 0.175 MB/token KV vs 7B's 0.055 MB/token, so preemption enters earlier
+N_VALUES=(10 25 50 100 200 500 1000)
+TP_VALUES=(2)
+COOLDOWN_S=60
 
 mkdir -p "$OUT_DIR"
 
-# Sanity checks
+### Sanity checks
 if [ -z "${VIRTUAL_ENV:-}" ]; then
     echo "ERROR: venv not active. Run: source ~/venvs/vllm/bin/activate"
     exit 1
@@ -26,21 +36,30 @@ if ! python -c "import vllm" 2>/dev/null; then
     exit 1
 fi
 
-if [ ! -f ~/benchmarks/test_concurrent.py ]; then
-    echo "ERROR: ~/benchmarks/test_concurrent.py not found."
-    echo "Create symlink: ln -sf $HERE/scripts/test_concurrent.py ~/benchmarks/test_concurrent.py"
+if [ ! -f "$REPO_ROOT/benchmarks/scripts/instrumentation/bench_with_thermals_qwen72b.py" ]; then
+    echo "ERROR: bench_with_thermals_qwen72b.py not found at $REPO_ROOT/benchmarks/scripts/instrumentation/"
     exit 1
 fi
 
+if [ ! -d /home/mozarcik/models/qwen25-72b-awq ]; then
+    echo "ERROR: Model directory missing"
+    exit 1
+fi
+
+### H3 config env vars (from logbook/2026-04-24.md hypothesis testing)
+### enforce_eager=True is still required (H2 crashed with HSA_STATUS_ERROR)
+### AMD_SERIALIZE_KERNEL and HIP_LAUNCH_BLOCKING REMOVED (H3: 36% speedup)
 export VLLM_ROCM_USE_AITER=0
-export AMD_SERIALIZE_KERNEL=3
-export HIP_LAUNCH_BLOCKING=1
+unset AMD_SERIALIZE_KERNEL
+unset HIP_LAUNCH_BLOCKING
 
 echo "============================================" | tee "$SUMMARY"
-echo "Plan A sweep started: $(date)"                 | tee -a "$SUMMARY"
+echo "Plan B sweep started: $(date)"                 | tee -a "$SUMMARY"
+echo "Model: Qwen 2.5 72B AWQ (local)"               | tee -a "$SUMMARY"
 echo "N values: ${N_VALUES[*]}"                      | tee -a "$SUMMARY"
 echo "TP values: ${TP_VALUES[*]}"                    | tee -a "$SUMMARY"
 echo "Cooldown between runs: ${COOLDOWN_S}s"         | tee -a "$SUMMARY"
+echo "Config: H3 (enforce_eager=True, no debug flags)" | tee -a "$SUMMARY"
 echo "Total runs: $((${#N_VALUES[@]} * ${#TP_VALUES[@]}))" | tee -a "$SUMMARY"
 echo "Output: $OUT_DIR"                              | tee -a "$SUMMARY"
 echo "============================================" | tee -a "$SUMMARY"
@@ -57,13 +76,13 @@ for tp in "${TP_VALUES[@]}"; do
         echo "--- Run $RUN_IDX/$TOTAL_RUNS: $NAME ---" | tee -a "$SUMMARY"
         echo "Time: $(date +%H:%M:%S) | Elapsed: $(( ($(date +%s) - GLOBAL_START) / 60 ))min" | tee -a "$SUMMARY"
 
-        # Kill any lingering vLLM processes from a previous failed run
+        ### Kill any lingering vLLM processes from a previous failed run
         pkill -f EngineCore 2>/dev/null || true
-        pkill -f test_concurrent 2>/dev/null || true
+        pkill -f test_concurrent_qwen72b 2>/dev/null || true
         pkill -f sample_system 2>/dev/null || true
         sleep 2
 
-        python "$HERE/bench_with_thermals.py" "$tp" "$n" \
+        python "$REPO_ROOT/benchmarks/scripts/instrumentation/bench_with_thermals_qwen72b.py" "$tp" "$n" \
             --name "$NAME" --out-dir "$OUT_DIR" 2>&1 | \
             tee -a "$OUT_DIR/${NAME}-wrapper.log" | \
             grep -E "Output throughput|Requests/second|Total time|ERROR|Load time" | \
@@ -79,7 +98,7 @@ done
 ELAPSED=$(( ($(date +%s) - GLOBAL_START) / 60 ))
 echo "" | tee -a "$SUMMARY"
 echo "============================================" | tee -a "$SUMMARY"
-echo "Plan A complete: $(date), total ${ELAPSED}min" | tee -a "$SUMMARY"
+echo "Plan B complete: $(date), total ${ELAPSED}min" | tee -a "$SUMMARY"
 echo "============================================" | tee -a "$SUMMARY"
 
 echo "" | tee -a "$SUMMARY"
@@ -98,4 +117,3 @@ done
 
 echo ""
 echo "Summary: $SUMMARY"
-echo "Next: regenerate chart with updated data"

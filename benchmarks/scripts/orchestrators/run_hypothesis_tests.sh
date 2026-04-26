@@ -5,8 +5,9 @@
 
 set -u  ### unset vars = error, ale NIE set -e (chcemy kontynuowac przy padach)
 
-HERE="$HOME/pjatk-ai-lab-log/benchmarks/results/scripts"
-LOG_DIR="$HOME/pjatk-ai-lab-log/logs/qwen72b_hypothesis_$(date +%Y%m%d_%H%M)"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
+HERE="$REPO_ROOT/benchmarks/scripts/runners"
+LOG_DIR="$REPO_ROOT/logs/qwen72b_hypothesis_$(date +%Y%m%d_%H%M)"
 mkdir -p "$LOG_DIR"
 
 SCRIPT="$HERE/sanity_qwen72b_awq_hypothesis.py"
