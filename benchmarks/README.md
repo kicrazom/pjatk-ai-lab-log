@@ -1,59 +1,91 @@
 # Benchmarks
 
-Performance characterization of the workstation's ML compute stack.
-Benchmarks fall into two categories.
+![The battle of the models in AMD kingdom on vLLM-powered horses, commencing at dawn...](assets/battle_of_LLM_models_gemini.png)
 
-## Low-level compute
+Performance characterization of vLLM 0.19 + ROCm 7.2.1 on 2× R9700
+(gfx1201 / Navi 48 / RDNA 4), plus a low-level GEMM ceiling. The driving
+question is **when TP=2 helps, hurts, or is mandatory** as model size and
+quantization vary. PCIe 5.0 x16 (no xGMI) makes the per-layer `all_reduce`
+the cost; halved per-GPU weight reads are the benefit.
 
-Raw hardware throughput — matrix multiply, memory bandwidth, ROCm primitives.
-These establish a theoretical ceiling and validate the GPU / ROCm / PyTorch
-stack is correctly installed.
+## The TP=2 arc — harmful, envelope-defining, mandatory
 
-- [`run_single_r9700_benchmark.sh`](run_single_r9700_benchmark.sh) —
-  GEMM benchmark (FP32/FP16/BF16 TFLOPS) on single R9700, using the
-  `~/venvs/rocm72/` environment.
+| Regime | Representative model | TP=2 verdict |
+|---|---|---|
+| Harmful | Qwen 2.5 7B FP16 (15 GB) | TP=2 plateau is 24% *below* TP=1 — sync cost > parallelism gain; single-GPU optimal |
+| Envelope-defining | **Qwen 3.6 27B** FP8 / BF16 | FP8 OOMs on TP=1 (~29 GiB runtime weights leave no KV headroom); both variants need TP=2 |
+| Mandatory | Qwen 2.5 72B AWQ (39 GB) | Even quantized doesn't fit one 32 GB card |
 
-## Inference serving
+Qwen 3.6 27B (released 2026-04-22, dense, Apache 2.0) defines the
+practical envelope at this parameter count. Both variants run on
+TP=2 with `enforce_eager=True` (smoke 2026-04-26): **FP8** at
+`max_model_len=2048`, `gpu_memory_utilization=0.85` — 15.35 GiB weights
++ 7.53 GiB KV per card; **BF16** at `max_model_len=1024`, `util=0.95` —
+25.76 GiB + 2.68 GiB KV. FP8 + TP=1 OOMs (29 GiB runtime weights leave
+no headroom). CUDA-graph capture on either TP setting hits the same
+`HSA_STATUS_ERROR` familiar from the 72B AWQ work. The "phase
+transition" is the boundary between *TP=1 optimal* (≤7B FP16) and
+*TP=2 required* (≥27B at any quantization), not a TP=1 / TP=2 choice
+within one model.
 
-Real workload throughput — vLLM serving LLM inference with multiple
-concurrent requests. These measure what the workstation actually delivers
-when used for local AI.
+**Unexpected on R9700: BF16 outpaces FP8 by ~75%** in cold first
+inference (7.23 vs 4.15 tok/s) — vLLM lacks FP8 kernel configs for
+gfx1201 and falls back to a generic block-FP8 path, inverting the
+FP8 > BF16 ordering typical on H100/MI300X. The 7.23 tok/s BF16
+cold figure suggests substantial warm-state headroom: equivalent
+CUDA setups (Q4_K_M on RTX 4090, llama.cpp) reach ~46 tok/s
+token-gen, an order of magnitude above our cold-start measurement.
+Detailed throughput sweep is next.
 
-- [`results/`](results/) — **vLLM throughput scaling study** (April 2026)
-  - Qwen 2.5 7B Instruct, FP16
-  - N in {50, 100, 200, 500, 1000, 2000, 3000} x TP in {1, 2} = 14 runs
-  - Per-run thermal and utilization timelines (CPU + 2x GPU + iGPU)
-  - Key finding: TP=1 saturates at 3870 tok/s, TP=2 at 2940 tok/s
-    (PCIe all_reduce overhead makes TP=2 a pessimization for this
-    workload on a model that fits in a single 32 GB R9700)
+## The model set (13 models, ~770 GB)
 
-![Scaling curve](results/scaling_curve.png)
+| # | Directory | Repo ID | Size | Variant |
+|--:|---|---|---:|---|
+|  1 | `bielik-11b-v23` | `speakleash/Bielik-11B-v2.3-Instruct` | 21 GB | FP16 |
+|  2 | `bielik-11b-v23-awq` | `speakleash/Bielik-11B-v2.3-Instruct-AWQ` | 5.8 GB | AWQ Int4 |
+|  3 | `llama-pllum-8b-instruct` | `CYFRAGOVPL/Llama-PLLuM-8B-instruct` | 15 GB | BF16 |
+|  4 | `pllum-12b-chat` | `CYFRAGOVPL/PLLuM-12B-chat` | 23 GB | BF16 |
+|  5 | `mistral-nemo-instruct-2407` | `mistralai/Mistral-Nemo-Instruct-2407` | 46 GB | BF16 |
+|  6 | `qwen25-7b-instruct` | `Qwen/Qwen2.5-7B-Instruct` | 15 GB | FP16 |
+|  7 | `qwen25-72b-awq` | `Qwen/Qwen2.5-72B-Instruct-AWQ` | 39 GB | AWQ Int4 |
+|  8 | `qwen36-27b-fp8` | `Qwen/Qwen3.6-27B-FP8` | 29 GB | FP8 |
+|  9 | `qwen36-27b` | `Qwen/Qwen3.6-27B` | 56 GB | BF16 |
+| 10 | `mixtral-8x7b-awq` | `TheBloke/Mixtral-8x7B-Instruct-v0.1-AWQ` | 23 GB | AWQ Int4 (MoE) |
+| 11 | `llama-pllum-70b-base` | `CYFRAGOVPL/Llama-PLLuM-70B-base` | 132 GB | BF16 (base) |
+| 12 | `llama-pllum-70b-instruct` | `CYFRAGOVPL/Llama-PLLuM-70B-instruct` | 132 GB | BF16 (SFT) |
+| 13 | `llama-pllum-70b-chat` | `CYFRAGOVPL/Llama-PLLuM-70B-chat` | 132 GB | BF16 (SFT+RLHF) |
 
-See [`results/README.md`](results/README.md) for the full writeup.
+Axes: 12 dense + 1 MoE; 5× FP16/BF16 instruct, 4× AWQ Int4, 1× FP8, 3×
+pretrain BF16; Polish-native (Bielik ×2, PLLuM ×5) + multilingual general
+purpose (Qwen 2.5 ×2, Qwen 3.6 ×2, Mistral-Nemo); the three Llama-PLLuM
+70B variants isolate SFT + RLHF cost on identical base weights.
 
-## Planned
+## Layout
 
-- Qwen 2.5 72B AWQ — where TP=2 becomes mandatory (model does not fit
-  on single GPU). Validates the "other half" of the tensor parallel story.
-- Bielik-11B-v2.3-Instruct, PLLuM-12B — Polish-language models, cross-track
-  relevance for Scientific Writing 3.0 course material.
-- Mixtral-8x7B-AWQ — mixture-of-experts architecture as a third data point
-  alongside dense 7B and dense 72B.
-- Long-form decode (max_tokens >= 1024) — regime where TP=2 may amortize
-  its all_reduce cost.
-
-## Reproducing
-
-All inference benchmarks require the vLLM virtual environment:
-
-```bash
-source ~/venvs/vllm/bin/activate
-export VLLM_ROCM_USE_AITER=0
-export AMD_SERIALIZE_KERNEL=3
-export HIP_LAUNCH_BLOCKING=1
+```
+assets/         Cover image and static media
+methodology/    Sweep design, gfx1201 env vars, hardware/iGPU separation
+scripts/
+  low_level/    GEMM benchmark (single R9700 ceiling)
+  plotting/     Scaling and thermal chart regenerators
+  instrumentation/  Sampler + thermal-instrumented benchmark wrappers
+  runners/      vLLM benchmark entry points (one per model family)
+  orchestrators/  Plan A / Plan B / hypothesis-test sweep drivers
+results/<model-config>/  One subdir per study, each with its own README
 ```
 
-The environment variables are a workaround for
-`HSA_STATUS_ERROR_INVALID_PACKET_FORMAT` during CUDA-graph capture on
-gfx1201 with vLLM 0.19+rocm721. See [`results/README.md`](results/README.md)
-for details and suggested retest after upstream fixes.
+## Status
+
+- [x] Plan A — Qwen 2.5 7B FP16, TP=1 vs TP=2, 14 runs (2026-04-17).
+      [`results/qwen2.5-7b-fp16/`](results/qwen2.5-7b-fp16/README.md)
+- [x] Plan B pilot — Qwen 2.5 72B AWQ TP=2, plateau ~121 tok/s, plus
+      H7 / CCD1 negative-result follow-ups (2026-04-24).
+      [`results/qwen2.5-72b-awq/`](results/qwen2.5-72b-awq/README.md)
+- [ ] Phase-transition sweep — Qwen 3.6 27B FP8 + BF16, both TP=2 (FP8
+      smoke test passed 2026-04-26; full N sweep pending).
+- [ ] Polish-language sweep (Bielik ×2, PLLuM ×5).
+- [ ] Mixtral-8x7B-AWQ (MoE data point), Mistral-Nemo (multilingual ref).
+
+For sweep design, env-var rationale, and the dGPU/iGPU separation that
+keeps the integrated `gfx1036` out of compute, see
+[`methodology/`](methodology/README.md).
