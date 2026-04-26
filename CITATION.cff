@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+title: "NaviMed-UMB: hardware envelope studies for local AI deployment on consumer RDNA 4 GPUs"
+message: "If you use or reference this work, please cite it as below."
+type: software
+authors:
+  - family-names: "Minarowski"
+    given-names: "Łukasz"
+    orcid: "https://orcid.org/0000-0002-2536-3508"
+    affiliation: "Department of Respiratory Physiopathology, Medical University of Białystok, Poland"
+    email: "lukasz.minarowski@umb.edu.pl"
+date-released: "2026-04-26"
+version: "0.1.0"
+license: "CC-BY-4.0"
+repository-code: "https://github.com/kicrazom/navimed-umb"
+keywords:
+  - large language models
+  - LLM benchmarking
+  - local inference
+  - vLLM
+  - ROCm
+  - AMD GPU
+  - RDNA 4
+  - hardware envelope
+  - reproducibility
+  - medical AI infrastructure
+  - GDPR
+  - EU AI Act
+abstract: >-
+  An engineering log and benchmark suite documenting the practical
+  envelope of running modern large language models (up to 70B
+  parameters) on a consumer-grade dual AMD Radeon AI PRO R9700 32 GB
+  workstation under ROCm 7.2 and vLLM 0.19. Version 0.1.0 documents
+  the working configurations for Qwen 3.6 27B (released 2026-04-22)
+  on this hardware, including a quantization-performance inversion
+  finding (BF16 outpaces FP8 by approximately 75% under the current
+  software stack) attributable to the absence of R9700-specific FP8
+  kernel configurations in vLLM. Intended audience includes
+  researchers preparing local AI infrastructure for privacy-sensitive
+  workloads, hardware reviewers seeking reproducible methodology, and
+  software maintainers working on RDNA 4 support in inference
+  frameworks.
