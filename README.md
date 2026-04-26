@@ -1,4 +1,4 @@
-# pjatk-ai-lab-log
+# Navimed-UMB
 
 Engineering log of a local AI / LLM workstation build — hardware, power
 infrastructure, ROCm environment, and benchmarks.
