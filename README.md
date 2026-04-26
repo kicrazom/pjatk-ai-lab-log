@@ -79,4 +79,13 @@ models, long-form decode).
 
 ## License
 
-[GPL-3.0](LICENSE) — see file for full terms.
+This repository uses **dual licensing**:
+
+- **Code** (Python scripts, dashboard, shell, configuration files)
+  is licensed under the [MIT License](LICENSE-CODE).
+- **Documentation, methodology, lab logs, and benchmark findings**
+  are licensed under [Creative Commons Attribution 4.0 International
+  (CC BY 4.0)](LICENSE).
+
+For citation, see [`CITATION.cff`](CITATION.cff) or use the
+"Cite this repository" button on GitHub.
