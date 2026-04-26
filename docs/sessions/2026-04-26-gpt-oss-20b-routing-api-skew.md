@@ -143,7 +143,41 @@ from triton_kernels.routing import routing_from_bitmatrix
 This is a **version skew**, not an absent feature class:
 
 - **MXFP4 layout / dequant path is fully functional** in the installed `triton_kernels==1.0.0` (verified by direct import in §4.4(a)).
-- **MoE routing path that gpt-oss specifically requires** has not yet propagated to a published `triton_kernels` release that the ROCm wheel pulls.
+- **MoE routing path that gpt-oss specifically requires** is absent from the `triton_kernels` build that the vLLM ROCm wheel pulls.
+
+### 5.1 Distribution provenance
+
+The `triton_kernels==1.0.0` observed here is **not a PyPI release**. Verification:
+
+```bash
+$ pip index versions triton_kernels
+triton_kernels (0.1.0)
+Available versions: 0.1.0
+  INSTALLED: 1.0.0
+  LATEST:    0.1.0
+
+$ pip show triton_kernels
+Name: triton_kernels
+Version: 1.0.0
+Summary:
+Home-page:
+Author:
+Author-email:
+License:
+Location: /home/mozarcik/venvs/vllm/lib/python3.12/site-packages
+Requires: numpy, pytest
+Required-by: vllm
+```
+
+Three observations:
+
+- Public PyPI's latest published version of `triton_kernels` is `0.1.0`. The `1.0.0` line is not distributed through PyPI at all.
+- `Required-by: vllm` confirms the package was pulled as a transitive dependency at vLLM install time, not installed manually.
+- All metadata fields (`Summary`, `Home-page`, `Author`, `License`) are empty — characteristic of internal CI builds without a fully populated `pyproject.toml`. The wheel is a pure-Python wheel (`triton_kernels-1.0.0-py3-none-any.whl`), so the missing `routing.py` is missing source, not a failed compile against `gfx1201`.
+
+The wheel was resolved from a non-default index — most likely `https://wheels.vllm.ai/rocm` (or an equivalent AMD/vLLM-hosted index) at the time the local `vllm 0.19.0+rocm721` was installed (2026-04-17 19:17 local time on this workstation).
+
+The practical consequence is that the resolution path **does not run through PyPI**. Monitoring `pip index versions triton_kernels` will not surface fixes — those will arrive only when a new vLLM ROCm wheel is published with an updated bundled `triton_kernels` build, or when `openai/triton` upstream merges and tags a release that downstream distributors choose to incorporate.
 
 ## 6. Three observed configurations on 2× R9700
 
@@ -165,8 +199,10 @@ The gradient is itself the observation. "Supported on R9700" in vLLM's official 
 
 Re-evaluate when either:
 
-- `triton_kernels >= X.Y` (whichever release exposes `routing_from_bitmatrix`) propagates as a ROCm wheel dependency, or
-- vLLM ships a ROCm wheel with an embedded compatible `triton_kernels` (analogous to what AMD does internally for loaner-hardware demonstrations).
+- a new vLLM ROCm wheel is published bundling a `triton_kernels` build that exposes `routing_from_bitmatrix` (this is the most likely first signal — track [vLLM releases](https://github.com/vllm-project/vllm/releases) filtered by ROCm), or
+- AMD/upstream publishes a `triton_kernels` build for `gfx1201` independently of vLLM that can be drop-in installed alongside the existing wheel.
+
+PyPI version monitoring (`pip index versions triton_kernels`) is **not** an effective signal here, since the `1.0.0` line is distributed only through vLLM/AMD-hosted indices and does not propagate to public PyPI (latest there is `0.1.0`).
 
 ## 8. Implications for the Hardware Envelope characterization
 
