@@ -1,0 +1,9 @@
+:root { font-family: Arial, sans-serif; }
+body { margin: 0; background: #f8fafc; color: #0f172a; }
+.container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+.card { background: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.title { font-size: 2rem; font-weight: 700; }
+.big { font-size: 1.25rem; }
+.btn { font-size: 1.2rem; padding: 0.8rem 1.2rem; border-radius: 12px; border: 2px solid #1d4ed8; background: #1d4ed8; color: white; }
+.input { width: 100%; font-size: 1.1rem; padding: 0.7rem; margin-bottom: 0.8rem; }
+.row { display: flex; gap: 1rem; }
