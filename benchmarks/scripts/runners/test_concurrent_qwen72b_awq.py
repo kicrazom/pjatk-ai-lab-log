@@ -15,6 +15,7 @@ Based on test_concurrent.py (Qwen 7B) with adjustments for 72B AWQ:
 """
 import sys
 import time
+import os
 
 
 def make_prompts(n: int) -> list[str]:
@@ -59,7 +60,7 @@ def main() -> int:
 
     t0 = time.time()
     llm = LLM(
-        model="/home/mozarcik/models/qwen25-72b-awq",
+        model=os.path.expanduser("~/models/qwen25-72b-awq"),
         dtype="auto",
         max_model_len=4096,
         gpu_memory_utilization=0.92,

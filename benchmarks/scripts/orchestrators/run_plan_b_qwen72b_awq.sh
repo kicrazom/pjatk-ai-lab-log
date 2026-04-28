@@ -41,7 +41,7 @@ if [ ! -f "$REPO_ROOT/benchmarks/scripts/instrumentation/bench_with_thermals_qwe
     exit 1
 fi
 
-if [ ! -d /home/mozarcik/models/qwen25-72b-awq ]; then
+if [ ! -d ${HOME}/models/qwen25-72b-awq ]; then
     echo "ERROR: Model directory missing"
     exit 1
 fi

@@ -35,7 +35,7 @@ vocab 248,044).
 ### Test 1 — FP8 TP=1 default config: OOM during weight padding
 
 ```python
-LLM(model='/home/mozarcik/models/qwen36-27b-fp8',
+LLM(model='~/models/qwen36-27b-fp8',
     tensor_parallel_size=1,
     max_model_len=4096,
     gpu_memory_utilization=0.85)
@@ -91,7 +91,7 @@ export HIP_LAUNCH_BLOCKING=1
 ```
 
 ```python
-LLM(model='/home/mozarcik/models/qwen36-27b-fp8',
+LLM(model='~/models/qwen36-27b-fp8',
     tensor_parallel_size=2,
     max_model_len=2048,
     gpu_memory_utilization=0.85,
@@ -116,7 +116,7 @@ typical base-model continuation behaviour.
 ### Test 4 — BF16 TP=2 with `util=0.85`: KV cache underflow
 
 ```python
-LLM(model='/home/mozarcik/models/qwen36-27b',
+LLM(model='~/models/qwen36-27b',
     tensor_parallel_size=2,
     max_model_len=2048,
     gpu_memory_utilization=0.85,

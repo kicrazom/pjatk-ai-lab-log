@@ -105,7 +105,7 @@ def run_sanity(hypothesis: str, model_path: str) -> int:
 
 def main() -> int:
     hypothesis = os.environ.get("HYPOTHESIS", "H0")
-    model_path = "/home/mozarcik/models/qwen25-72b-awq"
+    model_path = os.path.expanduser("~/models/qwen25-72b-awq")
     return run_sanity(hypothesis, model_path)
 
 

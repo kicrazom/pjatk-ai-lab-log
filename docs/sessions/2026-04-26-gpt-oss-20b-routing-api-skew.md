@@ -84,7 +84,7 @@ print(dir(triton_kernels))
 Output:
 
 ```
-/home/mozarcik/venvs/vllm/lib/python3.12/site-packages/triton_kernels/__init__.py
+~/venvs/vllm/lib/python3.12/site-packages/triton_kernels/__init__.py
 ['__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__path__', '__spec__']
 ```
 
@@ -164,7 +164,7 @@ Home-page:
 Author:
 Author-email:
 License:
-Location: /home/mozarcik/venvs/vllm/lib/python3.12/site-packages
+Location: ~/venvs/vllm/lib/python3.12/site-packages
 Requires: numpy, pytest
 Required-by: vllm
 ```
