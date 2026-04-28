@@ -23,7 +23,7 @@
 
 set -euo pipefail
 
-REPO_ROOT="$HOME/pjatk-ai-lab-log"
+REPO_ROOT="$HOME/navimed-umb"
 SCRIPTS_DIR="$REPO_ROOT/benchmarks/scripts"
 RESULTS_DIR="$REPO_ROOT/benchmarks/results"
 

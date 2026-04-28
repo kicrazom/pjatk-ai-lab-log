@@ -77,7 +77,7 @@ MODEL_PATHS = {
 
 
 # Output paths (use Path.home() to avoid hardcoded usernames)
-RESULTS_DIR = Path.home() / "pjatk-ai-lab-log/benchmarks/results/qwen36-27b"
+RESULTS_DIR = Path.home() / "navimed-umb/benchmarks/results/qwen36-27b"
 RESULTS_JSON = RESULTS_DIR / "phase1_envelope.json"
 
 
