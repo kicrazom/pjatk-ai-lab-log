@@ -1,5 +1,9 @@
 # NaviMed-UMB
 
+[![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19851347.svg)](https://doi.org/10.5281/zenodo.19851347)
+[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/kicrazom/navimed-umb/releases/tag/v0.1.0)
+
 Engineering log of a local AI / LLM workstation build — hardware, power
 infrastructure, ROCm environment, and reproducible benchmarks for
 modern open-weight models on consumer-grade AMD RDNA 4 GPUs.
