@@ -38,3 +38,6 @@ benchmarks/results/qwen2.5-7b-fp16/sanity/
 scripts/download_models.sh
 scripts/download_watchdog.sh
 scripts/download_progress.py
+
+# Reference materials (papers, PDFs) — managed by Zotero, not tracked in repo
+references/
