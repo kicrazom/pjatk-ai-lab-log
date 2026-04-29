@@ -1,0 +1,11 @@
+config_id,quantization,kv_cache_dtype,max_model_len,gpu_memory_utilization,loaded,error_class,load_time_s,peak_vram_gb_max,kv_cache_tokens,max_concurrency,sanity_throughput_tok_s
+qwen36_27b_bf16_max1024_util095,bf16,,1024,0.95,True,,60.40,28.663,28224,27.56,7.82
+qwen36_27b_bf16_max1024_util095_kvfp8e4m3,bf16,fp8_e4m3,1024,0.95,True,,52.48,28.816,61152,59.72,1.48
+qwen36_27b_bf16_max1024_util097,bf16,,1024,0.97,True,,50.39,29.849,67424,65.84,7.46
+qwen36_27b_bf16_max2048_util095_kvfp8e4m3,bf16,fp8_e4m3,2048,0.95,True,,51.88,28.816,61152,29.86,1.53
+qwen36_27b_bf16_max2048_util097,bf16,,2048,0.97,True,,51.37,29.318,49392,24.12,7.89
+qwen36_27b_bf16_max512_util095,bf16,,512,0.95,True,,51.34,28.663,28224,55.12,4.61
+qwen36_27b_bf16_max512_util097,bf16,,512,0.97,True,,50.87,29.318,49392,96.47,7.40
+qwen36_27b_bf16_max768_util096,bf16,,768,0.96,True,,51.40,28.975,38416,50.02,7.29
+qwen36_27b_fp8_max2048_util085,fp8,,2048,0.85,True,,58.64,24.829,246960,120.59,4.77
+qwen36_27b_fp8_max4096_util090,fp8,,4096,0.90,True,,48.84,26.391,298704,72.93,5.34

@@ -1,0 +1,40 @@
+{
+  "config_id": "qwen36_27b_bf16_max1024_util095",
+  "model": "Qwen/Qwen3.6-27B-Instruct",
+  "model_path": "/home/mozarcik/models/qwen36-27b",
+  "quantization": "bf16",
+  "kv_cache_dtype": null,
+  "tensor_parallel_size": 2,
+  "max_model_len": 1024,
+  "gpu_memory_utilization": 0.95,
+  "enforce_eager": true,
+  "env": {
+    "VLLM_ROCM_USE_AITER": "0",
+    "AMD_SERIALIZE_KERNEL": "1",
+    "HIP_LAUNCH_BLOCKING": "1",
+    "PYTORCH_ALLOC_CONF": null
+  },
+  "loaded": true,
+  "error": null,
+  "error_class": null,
+  "load_time_s": 60.39859127998352,
+  "peak_vram_gb_per_gpu": [
+    28.663,
+    28.663
+  ],
+  "peak_vram_source": "rocm_smi",
+  "weights_gib_per_gpu": null,
+  "kv_cache_gb": null,
+  "kv_cache_tokens": 28224,
+  "max_concurrency": 27.56,
+  "sanity_throughput_tok_s": 7.816099065322684,
+  "timestamp_utc": "2026-04-29T17:22:21Z",
+  "rocm_version": "7.2.0",
+  "vllm_version": "0.19.0",
+  "torch_version": "2.10.0+git8514f05",
+  "torch_hip_version": "7.2.53211",
+  "gpu_model": "AMD Radeon AI PRO R9700",
+  "gpu_gcn_arch_name": "gfx1201",
+  "gpu_count": 2,
+  "schema_version": 1
+}

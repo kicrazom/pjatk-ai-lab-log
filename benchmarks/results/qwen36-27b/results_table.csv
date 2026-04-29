@@ -1,0 +1,8 @@
+model,quant,backend,TP,max_len,util,KV_dtype,N,n_runs,tok_s_out,tok_s_tot,total_s,req_s,VRAM_peak_GB,T_peak_C,W_mean,W_peak,W_per_tok_Wh,load_time_s,input_tok_total,output_tok_total,output_tok_mean,tuning
+Qwen/Qwen3.6-27B,bf16,vllm-0.19.0+rocm721,2,2048,0.97,default,10,1,68.70,76.00,18.64,0.540,29.25,50,255,679,0.001032,51.9,136,1280,128.0,stock
+Qwen/Qwen3.6-27B,bf16,vllm-0.19.0+rocm721,2,2048,0.97,default,25,1,84.00,92.70,38.11,0.660,29.38,57,275,716,0.000909,51.4,332,3200,128.0,stock
+Qwen/Qwen3.6-27B,bf16,vllm-0.19.0+rocm721,2,2048,0.97,default,50,1,83.60,92.30,76.56,0.650,29.25,63,320,889,0.001065,50.8,667,6400,128.0,stock
+Qwen/Qwen3.6-27B,bf16,vllm-0.19.0+rocm721,2,2048,0.97,default,100,1,86.50,95.50,147.39,0.680,29.25,67,346,657,0.001113,51.3,1334,12749,127.5,stock
+Qwen/Qwen3.6-27B,bf16,vllm-0.19.0+rocm721,2,2048,0.97,default,200,1,98.20,108.60,256.65,0.780,29.44,72,376,889,0.001063,52.3,2655,25208,126.0,stock
+Qwen/Qwen3.6-27B,bf16,vllm-0.19.0+rocm721,2,2048,0.97,default,500,1,91.70,101.20,696.38,0.720,29.25,72,404,825,0.001224,52.5,6644,63857,127.7,stock
+Qwen/Qwen3.6-27B,bf16,vllm-0.19.0+rocm721,2,2048,0.97,default,1000,1,97.30,107.40,1314.40,0.760,29.37,72,413,685,0.001179,52.4,13275,127829,127.8,stock
