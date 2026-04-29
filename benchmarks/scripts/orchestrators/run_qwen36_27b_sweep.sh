@@ -60,8 +60,8 @@ BF16_KV_DTYPE="${BF16_KV_DTYPE:-}"
 # FP8 has ~52x max concurrency at default config — sweep up to 50
 # BF16 has ~7x max concurrency at default config — sweep up to 7
 # Phase 1 may discover better BF16 config (e.g. 30x); update arrays below
-FP8_N_VALUES=(1 5 10 25 50)
-BF16_N_VALUES=(1 2 5 7)
+FP8_N_VALUES=(10 25 50 100 200 500 1000)
+BF16_N_VALUES=(10 25 50 100 200 500 1000)
 
 # Quantization filter
 ONLY_QUANT="${ONLY_QUANT:-both}"
