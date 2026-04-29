@@ -58,3 +58,6 @@ benchmarks/results/scaling/figures/
 # Aggregated SUMMARY.md, results_table.csv, and *.png plots are committed;
 # raw per-run files are kept local-only.
 benchmarks/results/*/thermal-runs/
+
+# Raw terminal logs from interactive sessions — local-only by default
+logbook/raw_logs/
