@@ -41,3 +41,15 @@ scripts/download_progress.py
 
 # Reference materials (papers, PDFs) — managed by Zotero, not tracked in repo
 references/
+
+# === EMBARGO: paper-bound benchmark results ===
+# Until arXiv preprint / IEEE Access submission, the following are kept
+# local-only. Public release scheduled with paper publication.
+# See benchmarks/results/README.md for full embargo policy.
+benchmarks/results/scaling/*.json
+benchmarks/results/scaling/*.csv
+benchmarks/results/scaling/*.parquet
+benchmarks/results/scaling/plots/
+benchmarks/results/scaling/figures/
+# Allow .gitkeep so the directory persists in git
+!benchmarks/results/scaling/.gitkeep
