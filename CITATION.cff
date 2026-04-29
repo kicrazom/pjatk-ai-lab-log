@@ -8,8 +8,8 @@ authors:
     orcid: "https://orcid.org/0000-0002-2536-3508"
     affiliation: "Department of Respiratory Physiopathology, Medical University of Białystok, Poland"
     email: "lukasz.minarowski@umb.edu.pl"
-date-released: "2026-04-26"
-version: "0.1.0"
+date-released: "2026-04-29"
+version: "0.2.0"
 license: "CC-BY-4.0"
 repository-code: "https://github.com/kicrazom/navimed-umb"
 keywords:
@@ -26,16 +26,19 @@ keywords:
   - GDPR
   - EU AI Act
 abstract: >-
-  An engineering log and benchmark suite documenting the practical
-  envelope of running modern large language models (up to 70B
-  parameters) on a consumer-grade dual AMD Radeon AI PRO R9700 32 GB
-  workstation under ROCm 7.2 and vLLM 0.19. Version 0.1.0 documents
-  the working configurations for Qwen 3.6 27B (released 2026-04-22)
-  on this hardware, including a quantization-performance inversion
-  finding (BF16 outpaces FP8 by approximately 75% under the current
-  software stack) attributable to the absence of R9700-specific FP8
-  kernel configurations in vLLM. Intended audience includes
-  researchers preparing local AI infrastructure for privacy-sensitive
-  workloads, hardware reviewers seeking reproducible methodology, and
-  software maintainers working on RDNA 4 support in inference
+abstract: >-
+  An engineering log and benchmark suite documenting the practical envelope of running modern large language models (up to 70B
+  parameters) on a consumer-grade dual AMD Radeon AI PRO R9700 32 GB workstation under ROCm 7.2 and vLLM 0.19. Version 0.2.0 introduces
+  METHODOLOGY.md v1.0 — a single source of truth synthesizing Capitelli (2025) reporting schema, Kim et al. (2026) AI disclosure
+  framework, Lerchner (2026) methodological humility, and ICMJE/COPE compliance — alongside universal Phase 1 envelope and Phase 2
+  scaling sweep analyzers applicable to all 13 models in the suite. Phase 2 scaling sweep results for Qwen 3.6 27B BF16 (N=10..1000)
+  yield three engineering findings under embargo classification: throughput knee occurs at approximately 8x the vLLM scheduler
+  max_concurrency estimate (not at the estimate itself); the vLLM scheduler exhibits graceful degradation at 5x over the knee
+  (-0.9% throughput) without starvation pathology; and the energy-optimal operating point in mWh per token differs from the
+  throughput-optimal point, a trade-off invisible in marketing benchmarks reporting only peak aggregate tok/s. The version 0.1.0
+  quantization-performance inversion finding (BF16 outpacing FP8 by approximately 75% on R9700) is reproduced and extended:
+  KV-cache fp8_e4m3 produces a 5x slowdown vs default KV at this release, attributable to the absence of native FP8 KV kernels for
+  gfx1201 in vLLM 0.19. Tier A statistical reruns (n=10 with Holm-Bonferroni FWER correction) are deferred to v0.2.1; current
+  results are single-shot exploratory. Intended audience includes researchers preparing local AI infrastructure for privacy-sensitive
+  workloads, hardware reviewers seeking reproducible methodology, and software maintainers working on RDNA 4 support in inference
   frameworks.
