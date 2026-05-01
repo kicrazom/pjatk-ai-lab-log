@@ -1,0 +1,19 @@
+# Canonical author identity for navimed-umb.
+# Per git-mailmap(5): "<canonical-name> <canonical-email>  <commit-name> <commit-email>"
+# Right side = pattern to match in commit metadata.
+# Left side  = display form used by git log, git shortlog, git blame, GitHub UI.
+#
+# This file rewrites display only. The git object database is untouched —
+# SHA, tags, DOI references remain stable.
+
+# Placeholder name from misconfigured git client → canonical
+Łukasz Minarowski <lukasz.minarowski@umb.edu.pl>  Imię Nazwisko <lukasz.minarowski@umb.edu.pl>
+
+# GitHub username → canonical author name
+Łukasz Minarowski <lukasz.minarowski@umb.edu.pl>  kicrazom <lukasz.minarowski@gmail.com>
+
+# ASCII fallback name + legacy gmail address → canonical (UTF-8 + institutional)
+Łukasz Minarowski <lukasz.minarowski@umb.edu.pl>  Lukasz Minarowski <lukasz.minarowski@gmail.com>
+
+# Keep umb.edu.pl commits as-is, only fix the diacritic
+Łukasz Minarowski <lukasz.minarowski@umb.edu.pl>  Lukasz Minarowski <lukasz.minarowski@umb.edu.pl>
