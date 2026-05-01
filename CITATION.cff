@@ -26,7 +26,6 @@ keywords:
   - GDPR
   - EU AI Act
 abstract: >-
-abstract: >-
   An engineering log and benchmark suite documenting the practical envelope of running modern large language models (up to 70B
   parameters) on a consumer-grade dual AMD Radeon AI PRO R9700 32 GB workstation under ROCm 7.2 and vLLM 0.19. Version 0.2.0 introduces
   METHODOLOGY.md v1.0 — a single source of truth synthesizing Capitelli (2025) reporting schema, Kim et al. (2026) AI disclosure
