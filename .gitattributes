@@ -1,0 +1,36 @@
+# NaviMed-UMB: Linux-only workstation project, LF line endings everywhere.
+# This file is authoritative — overrides any user's core.autocrlf setting.
+
+# Default: treat all files as text and normalize to LF
+* text=auto eol=lf
+
+# Source code: always LF
+*.py        text eol=lf
+*.sh        text eol=lf
+*.md        text eol=lf
+*.txt       text eol=lf
+*.json      text eol=lf
+*.jsonl     text eol=lf
+*.yaml      text eol=lf
+*.yml       text eol=lf
+*.toml      text eol=lf
+*.cff       text eol=lf
+*.cfg       text eol=lf
+*.ini       text eol=lf
+*.html      text eol=lf
+*.css       text eol=lf
+*.js        text eol=lf
+
+# Binary assets: never touch line endings
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.pdf       binary
+*.gz        binary
+*.zip       binary
+*.tar       binary
+*.parquet   binary
+*.safetensors binary
+*.gguf      binary
+*.bin       binary
