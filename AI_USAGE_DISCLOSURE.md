@@ -1,8 +1,8 @@
 # AI Usage Disclosure
 
-> **Document version**: 1.0 (released with `navimed-umb` v0.1.0)
+> **Document version**: 1.1 (released with `navimed-umb` v0.2.0)
 > **Author**: Łukasz Minarowski, MD, PhD
-> **Last updated**: 2026-04-26
+> **Last updated**: 2026-05-01
 
 This document discloses the AI tools used during the development of
 this repository and the associated preprint, the roles those tools
@@ -31,6 +31,30 @@ on AMD Radeon AI PRO R9700 GPUs — is therefore strictly post-cutoff
 for that model. The model could not have generated those measurements
 from training data; it could only react to logs and outputs provided
 by the author from local experiments.
+
+### Commit attribution transparency
+
+Two commits in early project history carry explicit `Co-Authored-By: Claude
+Opus 4.7` trailers in their commit messages, identifying AI co-authorship at
+the commit level per modern git/GitHub disclosure conventions:
+
+- `9a02dfe` (2026-04-25): *docs(benchmarks): add 13-model overview, methodology,
+  and Qwen 72B AWQ writeup*
+- `426a712` (2026-04-25): *chore(benchmarks): reorganize into scripts/,
+  results/<model>/, methodology/, assets/*
+
+Both predate the v0.1.0 release tag. All commits from v0.1.0 onward
+(2026-04-26 and later) are attributed solely to the author. The two
+trailers are intentionally retained — removing them would require rewriting
+the SHA values archived in Zenodo DOI 10.5281/zenodo.19851347 (v0.1.0) and
+the v0.2.0 DOI, breaking immutability guarantees expected of citation
+records. Per the principle that scientific disclosure should not be
+retroactively edited to appear cleaner than it was, the trailers stay.
+
+This is the position consistent with COPE/ICMJE: AI is *not* an author
+(Section 3 below), but commit-level acknowledgement of AI assistance during
+specific code/documentation operations is appropriate and is preserved here
+for the historical record.
 
 ---
 
@@ -145,6 +169,7 @@ versions remain in git history.
 | Document version | Repository version | Changes |
 |---|---|---|
 | 1.0 | v0.1.0 | Initial disclosure: Claude Opus 4.7 (web + CLI), GPT-5.5 Deep Thinking (web). |
+| 1.1 | v0.2.0 | Replaced PENDING DOI placeholder with assigned concept DOI (10.5281/zenodo.19851346). Added §1 "Commit attribution transparency" documenting two pre-v0.1.0 `Co-Authored-By: Claude` commits intentionally retained for Zenodo immutability. |
 
 ---
 
@@ -163,12 +188,7 @@ document for full detail:
 > sole responsibility of the author. AI tools did not execute
 > experiments, did not access the workstation, and were not given
 > autonomous agency. Full disclosure: see `AI_USAGE_DISCLOSURE.md` in
-> the project repository (DOI: 10.5281/zenodo.PENDING)."*
-
-<!-- TODO: After Zenodo registration of v0.1.0, replace `PENDING` with
-     the actual DOI (e.g., `10.5281/zenodo.12345678`) in the inline
-     blurb above. Amend commit recommended:
-     `docs(disclosure): add Zenodo DOI for v0.1.0` -->
+> the project repository (DOI: 10.5281/zenodo.19851346)."*
 
 ---
 
