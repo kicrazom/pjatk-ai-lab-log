@@ -61,3 +61,6 @@ benchmarks/results/*/thermal-runs/
 
 # Raw terminal logs from interactive sessions — local-only by default
 logbook/raw_logs/
+
+# Local-only session continuation notes (private)
+SESSION_RESUME.md
