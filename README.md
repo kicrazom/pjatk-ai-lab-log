@@ -2,7 +2,7 @@
 
 [![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19851346.svg)](https://doi.org/10.5281/zenodo.19851346)
-[![Version](https://img.shields.io/badge/version-0.1.0-blue.svg)](https://github.com/kicrazom/navimed-umb/releases/tag/v0.1.0)
+[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](https://github.com/kicrazom/navimed-umb/releases/tag/v0.2.0)
 
 Engineering log of a local AI / LLM workstation build — hardware, power
 infrastructure, ROCm environment, and reproducible benchmarks for
@@ -106,6 +106,58 @@ Full debugging trail, working configs table, environment variable
 corrections, and cross-reference to CUDA llama.cpp baselines:
 [`docs/sessions/2026-04-26-qwen36-vllm-envelope.md`](docs/sessions/2026-04-26-qwen36-vllm-envelope.md).
 
+Per-config Phase 1 envelope details (10 configurations, BF16 + FP8 + KV variants):
+[`benchmarks/results/hardware_envelope/SUMMARY.md`](benchmarks/results/hardware_envelope/SUMMARY.md).
+
+### Qwen 3.6 27B — concurrency scaling on 2× R9700 (v0.2.0)
+
+Phase 2 throughput sweep across N={10, 25, 50, 100, 200, 500, 1000} concurrent
+prompts on the Phase 1 best BF16 configuration. Single-shot exploratory
+measurements (n_runs=1); Tier A statistical reruns (n=10 with Holm-Bonferroni
+FWER correction) scheduled for v0.2.1 per
+[METHODOLOGY §7.4](METHODOLOGY.md).
+
+[![Scaling curve](benchmarks/results/qwen36-27b/scaling_curve.png)](benchmarks/results/qwen36-27b/scaling_curve.png)
+
+Three engineering findings (PUBLIC; concrete numbers reserved for forthcoming
+preprint):
+
+- **Throughput knee at ~8× the vLLM scheduler `max_concurrency` estimate.**
+  Optimum batch size is substantially higher than the scheduler default for
+  this model+config. Practitioners should sweep N empirically rather than
+  trust scheduler heuristics.
+- **vLLM scheduler graceful degradation.** At 5× over the throughput knee
+  (40× over scheduler estimate), output throughput regresses by less than 1%
+  versus peak. PagedAttention plus continuous batching are well-tuned for
+  over-saturation; no starvation pathology observed.
+- **Energy-optimal operating point ≠ throughput-optimal.** Lowest mWh per
+  token occurs at a much lower concurrency than peak throughput. Operators
+  should select N by priority — interactive (low N), throughput-max (peak N),
+  energy-min (low N) — a trade-off invisible in marketing benchmarks
+  reporting only peak aggregate tok/s.
+
+See [`benchmarks/results/qwen36-27b/SUMMARY.md`](benchmarks/results/qwen36-27b/SUMMARY.md)
+for the full per-N table, embargo classification, and methodological humility
+statement. [`METHODOLOGY.md`](METHODOLOGY.md) v1.0 documents the universal
+Phase 1/Phase 2 protocol applied across all 13 models in the suite.
+
+## v0.2.0 release
+
+This release introduces the universal Phase 1 envelope + Phase 2 scaling sweep
+methodology and applies it to Qwen 3.6 27B BF16 on 2× R9700. Engineering
+findings (knee, scheduler robustness, energy/throughput trade-off) are public;
+concrete throughput, latency, and power numbers are reserved for the
+forthcoming preprint per the per-artifact policy in
+[`METHODOLOGY.md`](METHODOLOGY.md) §11.
+
+The 7B Plan A sweep from v0.1.0 has been retrofit to the same schema for
+cross-model comparability.
+
+**Statistical methodology note:** Phase 2 v0.2.0 reports n_runs=1 (single-shot
+exploratory). Tier A reruns (n=10 with Holm-Bonferroni FWER correction) for
+key configurations are scheduled for v0.2.1 per METHODOLOGY §7.4. Current
+results characterize qualitative shape; statistical envelopes follow.
+
 ## v0.1.0 release
 
 This release captures the engineering snapshot as of 2026-04-26: 13
@@ -136,6 +188,8 @@ is in preparation: see [`paper/`](paper/).
 - Qwen 2.5 72B AWQ: pilot benchmark on TP=2 (2026-04-23)
 - 13-model benchmark suite assembled (~770 GB, 2026-04-25)
 - Qwen 3.6 27B envelope on R9700 / gfx1201 (2026-04-26, **v0.1.0**)
+- Phase 2 scaling sweep — Qwen 3.6 27B BF16 (N=10..1000), exploratory (2026-04-29)
+- METHODOLOGY.md v1.0 — universal Phase 1/Phase 2 protocol (2026-04-29, **v0.2.0**)
 
 ## AI assistance
 
