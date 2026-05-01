@@ -121,7 +121,7 @@ matplotlib + psutil installed.
 ```bash
 source ~/venvs/vllm/bin/activate
 export VLLM_ROCM_USE_AITER=0
-export AMD_SERIALIZE_KERNEL=3
+export AMD_SERIALIZE_KERNEL=1     # NOT 3 — current PyTorch rejects 3
 export HIP_LAUNCH_BLOCKING=1
 
 # From repo root:
