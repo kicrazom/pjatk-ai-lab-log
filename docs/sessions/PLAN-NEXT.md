@@ -1,22 +1,23 @@
-# PLAN-NEXT — Bielik 11B v2.3 weekend (2026-05-02 / 2026-05-03)
+# PLAN-NEXT — Bielik 11B AWQ + FP16 TP=1 (2026-05-05)
 
-**Last session:** 2026-05-01 — repository consistency cleanup, 8 atomic
-commits + logbook. See `logbook/2026-05-01.md`.
+**Last session:** 2026-05-04 — Phase 1 envelope (7/7 OK) + Phase 2 sweep
+fp16-tp2-max8192 (7/7 OK, plateau 1794 tok/s @ N≈500). See lab log
+`docs/sessions/2026-05-04-bielik-11b-fp16-sweep.md` and
+`benchmarks/results/bielik-11b-v23/SUMMARY.md`.
 
-**Current state (post-cleanup):**
+**Current state (post-Phase-2 first config):**
 
-* v0.1.0 (DOI 10.5281/zenodo.19851347) and v0.2.0 released.
-* `main` clean, all branches merged, no open PRs.
-* Repo audit complete: licenses SPDX-recognized, README at v0.2.0,
-  CITATION.cff valid, AI_USAGE_DISCLOSURE.md v1.1, mailmap consolidated.
-* Bielik 11B v2.3 Instruct + AWQ already in `~/models/` and HF cache.
-* METHODOLOGY.md v1.0 in place — authoritative for Bielik runs.
+* v0.1.0 (DOI 10.5281/zenodo.19851347) and v0.2.0 released — DOIs intact.
+* Phase 1 envelope JSONs in `benchmarks/results/hardware_envelope/bielik_11b_*.json`
+* Phase 2 fp16-tp2-max8192 thermal-runs + plots + SUMMARY.md committed.
+* `main` head: 911493a (pre-commit infra).
+* Worktree dirty — pending triage decision tomorrow morning.
 
 ---
 
-## Saturday 2026-05-02 — Bielik 11B FP16 (~5-6h)
+## Tomorrow 2026-05-05 — Phase 2 AWQ + FP16 TP=1 (~1.5-2h)
 
-### Pre-flight (~30 min)
+### Pre-flight (~10 min)
 
 ```
 cd ~/navimed-umb
@@ -26,91 +27,126 @@ export VLLM_ROCM_USE_AITER=0
 export AMD_SERIALIZE_KERNEL=1
 export HIP_LAUNCH_BLOCKING=1
 export ROCR_VISIBLE_DEVICES=0,1
+export HF_HUB_DISABLE_XET=1
 
-python3 -c "import torch; print(torch.cuda.device_count())"
-ls ~/models/bielik-11b-v23/
+git status                          # decide on dirty triage
+ls benchmarks/results/bielik-11b-v23/
 ```
 
-Plotter v2 multi-config (~1h) — extend plot_phase2_sweep.py to accept
---csv csv1.csv,csv2.csv --labels FP16,AWQ for cross-quant overlay.
-Required before AWQ on Sunday for single comparison plot.
+**Dirty repo decision** — two options:
+  - (A) Triage 45 min upfront (atomic commits per scope, see SESSION_RESUME)
+  - (B) Stash everything, sweep first, commit single batch at end of day
 
-### Phase 1 envelope (~30 min)
+Recommend (A) for scope hygiene; recommend (B) only if mental bandwidth low.
 
-Adapt sanity_qwen36_27b.py to sanity_bielik_11b.py. Bielik is not
-hybrid attention, so enforce_eager=False (CUDA graphs) is a real
-candidate config — first model in suite where eager may not be
-mandatory. Test 8-10 configs spanning TP={1,2}, max_len={2048,4096,8192},
-util={0.85,0.95}, eager={True,False}, plus 1-2 KV fp8e4m3 sanity points.
+### Sweep 1 — Bielik AWQ TP=1 (~15-20 min)
 
-**Pre-specified decision criteria** (write into runner comment before
-launch, no HARKing):
+Adapt `benchmarks/scripts/orchestrators/run_bielik_11b_sweep.sh` — change
+3 lines:
 
-> Phase 2 config = highest tok/s_out among loaded configs with
-> max_concurrency >= 30x scheduler default and VRAM_peak <= 30 GiB.
-> Tie-breaker: lowest VRAM peak.
+```
+QUANT="awq"
+TP=1
+MAX_LEN=2048      # AWQ Phase 1 best
+```
 
-### Phase 2 sweep (~3-4h)
+Output dir: `benchmarks/results/bielik-11b-v23/thermal-runs/` (same dir,
+filenames will be `awq-tp1-n*-...` not `fp16-tp2-n*-...` so no collision).
 
-Best config from Phase 1, N={10,25,50,100,200,500,1000}, n_runs=10
-with first run discarded (cold cache). Tier A statistics per
-METHODOLOGY section 7.4: Holm-Bonferroni FWER on the 7 N values.
-Output schema identical to Qwen 3.6 27B sweep for cross-model
-comparability.
+Lab log: `docs/sessions/2026-05-05-bielik-11b-awq-sweep.md`.
 
-### Lab log + commits
+Run:
+```
+systemd-inhibit --what=sleep:idle --who="bielik-awq-sweep" \
+    bash benchmarks/scripts/orchestrators/run_bielik_11b_awq_sweep.sh 2>&1 \
+    | tee /tmp/bielik-awq-$(date +%Y%m%d-%H%M).log
+```
 
-Atomic commits per METHODOLOGY section 7.3:
+**Pre-specified expectation (AVOID HARKing):**
 
-* data(phase1): Bielik 11B v2.3 FP16 envelope on R9700 (10 configs)
-* data(phase2): Bielik 11B FP16 sweep N=10..1000 (n_runs=10)
-* docs(sessions): 2026-05-02 Bielik 11B v2.3 FP16 sweep
+AWQ ma 3.13× więcej KV pool niż FP16 TP=1 (107k vs 34k). Spodziewamy się
+że AWQ plateau będzie WYŻSZE niż fp16-tp1 plateau, ale NIŻSZE niż
+fp16-tp2-max8192 (z racji single-GPU memory bandwidth limit). Knee
+prawdopodobnie później niż dla fp16 (więcej KV → więcej concurrent before
+preemption).
 
-Embargo classification per artefact in commit message. Polish-model
-embargo is **stricter** than Qwen — keep concrete numbers EMBARGOED
-until paper acceptance per scoop-risk policy.
+Jeśli AWQ tok/s_out @ N=10 jest >50 tok/s, plateau będzie wysokie. Jeśli
+<30 tok/s, AWQ kernel na gfx1201 jest niewydajny (consistent z Phase 1
+sanity 3.9 tok/s vs FP16 14.2 tok/s — AWQ kernel slowdown na single-prompt).
+
+### Sweep 2 — Bielik FP16 TP=1 max_len=2048 (~10-15 min)
+
+Adapt orchestrator — zmiany:
+
+```
+QUANT="fp16"
+TP=1
+MAX_LEN=2048
+```
+
+Lab log: `docs/sessions/2026-05-05-bielik-11b-fp16-tp1-sweep.md`.
+
+**Pre-specified expectation:** Plateau wyraźnie niższe niż fp16-tp2-max8192
+(34k vs 173k KV tokens = 5× mniej concurrent capacity). Knee przy N≈100-150.
+Ten sweep zamyka narrację TP=2 vs TP=1: TP=2 max=8192 plateau 1794 tok/s,
+TP=1 max=2048 plateau ~600-800 tok/s spodziewane.
+
+### Cross-config aggregation (~15 min)
+
+Adapt `finalize_bielik_phase2.py` na 3-config mode:
+
+```python
+CONFIGS = {
+    "fp16-tp2-max8192": {color: "#2ca02c", label: "FP16 TP=2 max=8192"},
+    "awq-tp1-max2048":  {color: "#1f77b4", label: "AWQ TP=1 max=2048"},
+    "fp16-tp1-max2048": {color: "#ff7f0e", label: "FP16 TP=1 max=2048"},
+}
+```
+
+Output:
+- `benchmarks/results/bielik-11b-v23/scaling_curve_3config.png` (3 lines)
+- `benchmarks/results/bielik-11b-v23/efficiency_curve_3config.png`
+- Update `SUMMARY.md` z cross-config narrative
+
+### Commit + push (~15 min)
+
+Atomic commits:
+1. `feat(bielik): Phase 2 sweep fp16-tp2-max8192 results + plots + SUMMARY`
+2. `feat(bielik): Phase 2 sweep awq-tp1-max2048 results`
+3. `feat(bielik): Phase 2 sweep fp16-tp1-max2048 results`
+4. `feat(bielik): cross-config aggregate plots + SUMMARY update`
+5. `docs(sessions): Bielik 11B v2.3 lab log entries 2026-05-04/05`
+
+Plus dirty repo cleanup (jeśli (A) we wcześniejszym kroku):
+- `style: apply pre-commit hooks across repo`
+- `fix(scripts): F841 + SC1128 + SC1090 lint cleanup`
 
 ---
 
-## Sunday 2026-05-03 — Bielik 11B AWQ (~4-5h)
+## What NOT to do tomorrow
 
-Same workflow as Saturday, model = bielik-11b-v23-awq. Phase 1 may be
-shorter (4-6 configs vs 10 for FP16) since many variables already
-known from FP16 sweep — skip KV fp8 retest, skip eager=False if FP16
-showed CUDA graphs work.
-
-**Cross-quant comparison plot** = the deliverable that makes this a
-publishable cross-quant story. Plotter v2 must produce a single
-scaling_curve.png with both FP16 and AWQ curves overlaid (not two
-separate plots). This is the artefact the FP16 + AWQ pair exists for.
-
-After Sunday: tag v0.3.0 if both quants land cleanly.
+- NIE skracaj N-laddra (wczoraj cały N={10..1000} działał w 9 min — szybko)
+- NIE wprowadzaj nowych quantization/TP combinacji bez Phase 1 envelope
+- NIE pomijaj ROCR_VISIBLE_DEVICES=0,1 — bez tego iGPU może się wmieszać
+- NIE upgrade vLLM (pinned 0.19.0+rocm721)
+- NIE rewrite commitów które są ancestors v0.1.0 / v0.2.0 (DOI immutable)
 
 ---
 
-## Open questions (carry forward)
+## Decision criterion for paper-bound config choice (PRE-SPECIFIED)
 
-1. **Plotter v2 multi-config** — extend plot_phase2_sweep.py for
-   cross-quant overlay. ~1h. Critical for Sunday deliverable.
-2. **Bielik TP=1 vs TP=2** — Phase 1 will decide. 11B FP16 should fit
-   one R9700 (~22 GB weights + KV); if so, TP=1 vs TP=2 comparison is
-   publishable as 7B-style story (TP=2 harmful at single-GPU-fit).
-3. **AMD AI Developer Program** — apply (~5 min form). Goal: pilot
-   Polish-model subset on MI300X for separate "sovereign vs cloud"
-   paper. No compute conflict with R9700 sessions.
-4. **HF strategy** — defer all uploads until paper publication.
+If asked which config to feature in the paper as "headline Bielik result":
+
+> Highest tok/s_out at the energy-optimal N (lowest W·s/tok). Tie-breaker:
+> highest plateau throughput. Tie-breaker 2: lowest VRAM peak.
+
+This avoids HARKing — criterion fixed before seeing AWQ + FP16 TP=1 results.
 
 ---
 
-## Embargo policy reminder (METHODOLOGY section 11)
+## After 2026-05-05 (if time permits or next session)
 
-At every result-generating step, label outputs explicitly:
-
-* **PUBLIC** — engineering note for repo: load status, VRAM, env vars,
-  knee position observation, scheduler robustness statement.
-* **EMBARGO — paper figure** — concrete throughput@N, latency
-  P50/P95/P99, KV cache curves, cross-model comparative numbers.
-
-**Stricter for Polish models** (Bielik, PLLuM): scoop risk higher than
-Qwen/Mistral due to small Polish AI community. Concrete numbers stay
-local-only until preprint submission.
+- Bielik 11B v2.3 paper-bound figures finalize
+- Move to next model in METHODOLOGY §4: Llama-PLLuM-8B-instruct
+- Or: cross-model comparison (Bielik 11B vs Qwen 7B vs Qwen 27B) — needs
+  fresh Qwen 7B re-run on current vLLM 0.19.0+rocm721 stack
