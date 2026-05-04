@@ -1,0 +1,39 @@
+{
+  "config_id": "bielik_11b_fp16_tp1_max2048_util090_eager",
+  "model": "speakleash/Bielik-11B-v2.3-Instruct",
+  "model_path": "/home/mozarcik/models/bielik-11b-v23",
+  "quantization": "fp16",
+  "kv_cache_dtype": null,
+  "tensor_parallel_size": 1,
+  "max_model_len": 2048,
+  "gpu_memory_utilization": 0.9,
+  "enforce_eager": true,
+  "env": {
+    "AMD_SERIALIZE_KERNEL": "1",
+    "HIP_LAUNCH_BLOCKING": "1",
+    "ROCR_VISIBLE_DEVICES": "0,1",
+    "VLLM_ROCM_USE_AITER": "0",
+    "PYTORCH_ALLOC_CONF": "<unset>",
+    "HIP_VISIBLE_DEVICES": "<unset>",
+    "NCCL_P2P_DISABLE": "<unset>"
+  },
+  "loaded": true,
+  "error": null,
+  "error_class": null,
+  "load_time_s": 21.725029230117798,
+  "peak_vram_gb_per_gpu": [
+    0.056,
+    0.056
+  ],
+  "peak_vram_source": "rocm_smi",
+  "kv_cache_tokens": 34320,
+  "kv_cache_gb": null,
+  "max_concurrency": 256,
+  "sanity_throughput_tok_s": 14.233,
+  "stack_versions": {
+    "vllm_version": "0.19.0",
+    "torch_version": "2.10.0+git8514f05",
+    "torch_hip_version": "7.2.53211",
+    "rocm_smi_version": "ROCM-SMI version: 4.0.0+fc0010cf6a"
+  }
+}
