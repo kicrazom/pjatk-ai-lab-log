@@ -1,0 +1,8 @@
+model,quant,backend,TP,max_len,util,KV_dtype,N,tok/s_out,tok/s_tot,total_s,req/s,VRAM_peak_GB,T_peak_C,W_mean,W_peak,W/tok,tuning,vs_baseline_%
+speakleash/Bielik-11B-v2.3-Instruct,FP16,vllm-rocm,2,8192,0.9,auto,10,183.14,204.03,6.99,1.431,28.129,45.0,188.0,628.0,1.0267,stock,100.0
+speakleash/Bielik-11B-v2.3-Instruct,FP16,vllm-rocm,2,8192,0.9,auto,25,407.16,453.85,7.75,3.224,28.127,48.0,185.5,502.0,0.4554,stock,222.3
+speakleash/Bielik-11B-v2.3-Instruct,FP16,vllm-rocm,2,8192,0.9,auto,50,699.47,783.28,8.69,5.756,28.127,51.0,196.2,686.0,0.2806,stock,381.9
+speakleash/Bielik-11B-v2.3-Instruct,FP16,vllm-rocm,2,8192,0.9,auto,100,1182.64,1321.03,10.55,9.479,28.163,53.0,217.2,1118.0,0.1837,stock,645.8
+speakleash/Bielik-11B-v2.3-Instruct,FP16,vllm-rocm,2,8192,0.9,auto,200,1657.78,1855.0,14.75,13.555,28.252,57.0,229.3,547.0,0.1383,stock,905.2
+speakleash/Bielik-11B-v2.3-Instruct,FP16,vllm-rocm,2,8192,0.9,auto,500,1793.96,2009.53,33.77,14.806,28.353,62.0,308.5,935.0,0.172,stock,979.6
+speakleash/Bielik-11B-v2.3-Instruct,FP16,vllm-rocm,2,8192,0.9,auto,1000,1793.39,2004.92,68.78,14.538,28.355,67.0,352.1,749.0,0.1963,stock,979.2
